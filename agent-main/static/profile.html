@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>个人中心 - 下一站Youth</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/static/css/profile.css">
+    <link rel="stylesheet" href="/static/css/user-menu.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="top-nav">
+        <div class="nav-container">
+            <button class="back-btn" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i>
+                <span>返回主页</span>
+            </button>
+            <h1 class="page-title">个人中心</h1>
+
+            <!-- 用户菜单 -->
+            <div class="user-menu" id="userMenu">
+                <button class="avatar-btn" id="avatarBtn" onclick="handleAvatarClick()">
+                    <i class="fas fa-user-circle"></i>
+                </button>
+                <div class="dropdown-menu" id="dropdownMenu">
+                    <a href="/profile.html">
+                        <i class="fas fa-user"></i> 个人资料
+                    </a>
+                    <a href="/dashboard.html">
+                        <i class="fas fa-comments"></i> 我的会话
+                    </a>
+                    <div class="dropdown-divider"></div>
+                    <a href="#" onclick="handleLogout(event)">
+                        <i class="fas fa-sign-out-alt"></i> 退出登录
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 - 横向布局 -->
+    <main class="profile-container">
+        <!-- 加载中提示 -->
+        <div class="loading-state" id="loadingState">
+            <div class="spinner"></div>
+            <p>加载中...</p>
+        </div>
+
+        <!-- 未登录提示 -->
+        <div class="not-logged-in" id="notLoggedIn" style="display: none;">
+            <div class="prompt-card">
+                <div class="prompt-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h2>需要登录</h2>
+                <p>访问个人资料需要先登录</p>
+                <button class="btn btn-primary" onclick="goToLogin()">
+                    <i class="fas fa-sign-in-alt"></i> 去登录
+                </button>
+            </div>
+        </div>
+
+        <!-- 个人资料内容 - 双栏布局 -->
+        <div class="profile-content" id="profileContent" style="display: none;">
+            <!-- 左侧栏：头像 + 基本信息 + 退出登录 -->
+            <div class="profile-sidebar">
+                <!-- 用户头像 -->
+                <div class="profile-header">
+                    <div class="avatar-section">
+                        <div class="avatar-large">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="user-greeting">
+                        <h2 id="userGreeting">你好，管理员</h2>
+                    </div>
+                </div>
+
+                <!-- 基本信息卡片 -->
+                <div class="info-card-inline">
+                    <div class="card-header">
+                        <i class="fas fa-user"></i>
+                        <h3>基本信息</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="showEditProfileModal()">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">用户名</span>
+                        <span class="info-value" id="username">admin</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">昵称</span>
+                        <span class="info-value" id="nickname">系统管理员</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">邮箱</span>
+                        <span class="info-value" id="email">admin@example.com</span>
+                    </div>
+                </div>
+
+                <!-- 退出登录按钮 -->
+                <div class="logout-section">
+                    <button class="btn btn-danger btn-block" onclick="showLogoutConfirm()">
+                        <i class="fas fa-sign-out-alt"></i> 退出登录
+                    </button>
+                </div>
+            </div>
+
+            <!-- 右侧栏：账户信息 + 统计数据 + 最近会话 -->
+            <div class="profile-main">
+                <!-- 账户信息卡片 -->
+                <div class="info-card-inline account-info-compact">
+                    <div class="card-header">
+                        <i class="fas fa-shield-alt"></i>
+                        <h3>账户信息</h3>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">订阅类型</span>
+                        <span class="info-value value-highlight" id="subscriptionType">管理员</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">会话限制</span>
+                        <span class="info-value" id="conversationLimit">无限制</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">已用会话</span>
+                        <span class="info-value" id="conversationUsed">5个</span>
+                    </div>
+                </div>
+
+                <!-- 统计数据 -->
+                <div class="stats-section">
+                    <div class="section-header-inline">
+                        <i class="fas fa-chart-line"></i>
+                        <h3>统计数据</h3>
+                    </div>
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-icon">
+                                <i class="fas fa-map-marked-alt"></i>
+                            </div>
+                            <div class="stat-content">
+                                <p class="stat-label">活跃计划</p>
+                                <p class="stat-value" id="totalPlans">0</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 最近会话 -->
+                <div class="conversations-section">
+                    <div class="section-header-inline">
+                        <i class="fas fa-comments"></i>
+                        <h3>最近会话</h3>
+                        <button class="btn btn-secondary btn-sm" onclick="goToDashboard()">
+                            查看全部 <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    <div class="conversations-list-compact" id="conversationsList">
+                        <!-- 会话列表将通过JavaScript动态加载 -->
+                        <div class="empty-state">
+                            <i class="fas fa-inbox"></i>
+                            <p>暂无会话</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- 登录提示弹窗 -->
+    <div class="login-prompt-modal" id="loginPromptModal">
+        <div class="modal-overlay" onclick="closeLoginPrompt()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> 提示</h3>
+                <button class="modal-close" onclick="closeLoginPrompt()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>访问此功能需要先登录</p>
+                <p style="color: #666; font-size: 14px; margin-top: 10px;">登录后可以保存历史对话和管理会话</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeLoginPrompt()">取消</button>
+                <button class="btn btn-primary" onclick="goToLogin()">去登录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 编辑资料弹窗 -->
+    <div class="edit-modal" id="editProfileModal">
+        <div class="modal-overlay" onclick="closeEditProfileModal()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit"></i> 编辑个人资料</h3>
+                <button class="modal-close" onclick="closeEditProfileModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editProfileForm">
+                    <div class="form-group">
+                        <label for="editNickname">
+                            <i class="fas fa-user"></i> 昵称
+                        </label>
+                        <input type="text" id="editNickname" class="form-control" placeholder="输入昵称" maxlength="50">
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmail">
+                            <i class="fas fa-envelope"></i> 邮箱
+                        </label>
+                        <input type="email" id="editEmail" class="form-control" placeholder="输入邮箱">
+                    </div>
+                    <div class="form-group">
+                        <label for="editAvatarFile">
+                            <i class="fas fa-image"></i> 头像
+                        </label>
+                        <input type="file" id="editAvatarFile" class="form-control" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp">
+                        <small style="color: #666; font-size: 12px;">支持jpg、png、gif、webp格式，最大5MB</small>
+                    </div>
+                    <div class="avatar-preview" id="avatarPreview" style="display: none;">
+                        <img id="avatarPreviewImg" src="" alt="头像预览">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeEditProfileModal()">取消</button>
+                <button class="btn btn-primary" onclick="saveProfile()">
+                    <i class="fas fa-save"></i> 保存
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 退出确认对话框 -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="modal-overlay" onclick="closeLogoutConfirm()"></div>
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h3><i class="fas fa-sign-out-alt"></i> 退出登录</h3>
+                <button class="modal-close" onclick="closeLogoutConfirm()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>确定要退出吗？</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeLogoutConfirm()">取消</button>
+                <button class="btn btn-danger" onclick="confirmLogout()">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/static/js/profile.js"></script>
+    <script src="/static/js/user-auth.js"></script>
+
+    <!-- 登录检查：个人资料页面需要登录 -->
+    <script>
+        // 页面加载完成后，检查登录状态
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[profile.html] DOM已加载，检查登录状态');
+            if (typeof window.initializeUserAuth === 'function') {
+                // 个人资料页面要求登录
+                window.initializeUserAuth(true);
+            } else {
+                console.error('[profile.html] user-auth.js 未加载，无法进行登录检查');
+            }
+        });
+    </script>
+</body>
+</html>

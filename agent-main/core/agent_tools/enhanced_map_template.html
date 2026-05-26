@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ title }}</title>
+  <script src="https://webapi.amap.com/maps?v=2.0&key={{ gaode_api_key }}&plugin=AMap.Scale,AMap.ToolBar,AMap.ControlBar"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { height: 100%; }
+    body {
+      width: 100%;
+      height: 100%;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      overflow: hidden;
+    }
+
+    /* 主容器 */
+    #container { width: 100%; height: 100%; position: relative; }
+
+    /* 顶部标题栏 */
+    .map-header {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 12px 30px;
+      border-radius: 25px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      backdrop-filter: blur(10px);
+    }
+    .map-header h1 {
+      font-size: 18px;
+      color: #333;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* 自定义信息窗口样式 */
+    .custom-infowindow {
+      min-width: 280px;
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    }
+
+    /* 图片容器 */
+    .info-image-container {
+      width: 100%;
+      height: 180px;
+      position: relative;
+      background: #f0f0f0;
+      overflow: hidden;
+    }
+
+    .info-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-bottom: 3px solid #4A90E2;
+    }
+
+    /* 加载状态 */
+    .image-loading {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      font-size: 14px;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .image-loading::before {
+      content: '📷';
+      font-size: 32px;
+    }
+
+    .image-loading::after {
+      content: '加载中...';
+    }
+
+    /* 加载失败 */
+    .image-error {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      color: white;
+      font-size: 13px;
+      flex-direction: column;
+      gap: 8px;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .image-error::before {
+      content: '⚠️';
+      font-size: 28px;
+    }
+
+    /* 图片轮播指示器 */
+    .image-indicators {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      transition: all 0.3s;
+    }
+
+    .indicator.active {
+      background: white;
+      width: 24px;
+      border-radius: 4px;
+    }
+
+    /* 内容区 */
+    .info-content {
+      padding: 16px;
+    }
+    .info-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #2C3E50;
+      margin-bottom: 8px;
+    }
+    .info-desc {
+      font-size: 13px;
+      color: #7F8C8D;
+      line-height: 1.5;
+    }
+    .info-coords {
+      margin-top: 10px;
+      padding-top: 10px;
+      border-top: 1px solid #ECF0F1;
+      font-size: 11px;
+      color: #95A5A6;
+    }
+
+    /* 路线信息卡片 */
+    .route-panel {
+      position: absolute;
+      top: 90px;
+      right: 20px;
+      width: 320px;
+      max-height: calc(100% - 120px);
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+      overflow-y: auto;
+      z-index: 999;
+      backdrop-filter: blur(10px);
+    }
+    .panel-content {
+      padding: 20px;
+    }
+    .panel-section {
+      margin-bottom: 20px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #E8E8E8;
+    }
+    .panel-section:last-child {
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    .panel-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 12px;
+    }
+    .stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .stat-item {
+      background: #F7F9FC;
+      padding: 12px;
+      border-radius: 8px;
+      text-align: center;
+    }
+    .stat-value {
+      font-size: 20px;
+      font-weight: 700;
+      color: #4A90E2;
+      margin-bottom: 4px;
+    }
+    .stat-label {
+      font-size: 11px;
+      color: #7F8C8D;
+      text-transform: uppercase;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .route-panel {
+        width: calc(100% - 40px);
+        max-height: 40%;
+        bottom: 20px;
+        top: auto;
+      }
+      .map-header h1 {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- 地图容器 -->
+  <div id="container"></div>
+
+  <!-- 顶部标题 -->
+  <div class="map-header">
+    <h1>{{ title }}</h1>
+  </div>
+
+  <!-- 路线侧边栏 -->
+  {% if polyline_points %}
+  <div id="route-panel" class="route-panel">
+    <div class="panel-content">
+      <div class="panel-section">
+        <div class="panel-title">路线概览</div>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-value">{{ (route_summary.get('distance', 0) / 1000) | round(1) }}</div>
+            <div class="stat-label">公里</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-value">{{ (route_summary.get('duration', 0) / 60) | round }}</div>
+            <div class="stat-label">分钟</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+
+  <script>
+    // 图片加载器类
+    class ImageLoader {
+      constructor() {
+        this.loadedImages = new Map();
+      }
+
+      // 加载单张图片（带重试）
+      loadImage(url, container, maxRetries = 3) {
+        const img = new Image();
+        let retryCount = 0;
+
+        img.onload = () => {
+          container.innerHTML = '';
+          container.appendChild(img);
+          img.className = 'info-image';
+        };
+
+        img.onerror = () => {
+          if (retryCount < maxRetries) {
+            retryCount++;
+            console.log(`图片加载失败，重试 ${retryCount}/${maxRetries}:`, url);
+            setTimeout(() => {
+              img.src = url + '?retry=' + retryCount;
+            }, 1000 * retryCount);
+          } else {
+            this.showFallback(container);
+          }
+        };
+
+        img.src = url;
+      }
+
+      // 加载多张图片（轮播）
+      loadImages(urls, container) {
+        if (!urls || urls.length === 0) {
+          this.showFallback(container);
+          return;
+        }
+
+        const validUrls = urls.filter(url => url && typeof url === 'string');
+
+        if (validUrls.length === 0) {
+          this.showFallback(container);
+          return;
+        }
+
+        if (validUrls.length === 1) {
+          this.loadImage(validUrls[0], container);
+          return;
+        }
+
+        // 多图轮播
+        let currentIndex = 0;
+        const imageContainer = container.querySelector('.image-container') || container;
+
+        // 创建图片元素
+        const img = document.createElement('img');
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+        imageContainer.appendChild(img);
+
+        // 创建指示器
+        const indicators = document.createElement('div');
+        indicators.className = 'image-indicators';
+        validUrls.forEach((_, index) => {
+          const dot = document.createElement('div');
+          dot.className = 'indicator' + (index === 0 ? ' active' : '');
+          indicators.appendChild(dot);
+        });
+        imageContainer.appendChild(indicators);
+
+        // 加载当前图片
+        const loadCurrent = () => {
+          img.src = validUrls[currentIndex];
+
+          // 更新指示器
+          const dots = indicators.querySelectorAll('.indicator');
+          dots.forEach((dot, index) => {
+            dot.classList.toggle('active', index === currentIndex);
+          });
+        };
+
+        img.onload = () => {
+          // 3秒后切换到下一张
+          setTimeout(() => {
+            currentIndex = (currentIndex + 1) % validUrls.length;
+            loadCurrent();
+          }, 3000);
+        };
+
+        img.onerror = () => {
+          // 当前图片失败，尝试下一张
+          currentIndex = (currentIndex + 1) % validUrls.length;
+          loadCurrent();
+        };
+
+        loadCurrent();
+      }
+
+      // 显示备用内容
+      showFallback(container) {
+        container.innerHTML = `
+          <div class="image-error">
+            <div>图片暂时无法加载</div>
+            <div style="font-size:11px;opacity:0.8;margin-top:5px;">
+              请检查网络连接或稍后再试
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // 初始化地图
+    const map = new AMap.Map('container', {
+      zoom: 12,
+      center: [{{ center.lng }}, {{ center.lat }}],
+      mapStyle: 'amap://styles/fresh',
+      viewMode: '2D',
+      showLabel: true,
+      resizeEnable: true
+    });
+
+    // 添加地图控件
+    map.addControl(new AMap.Scale());
+    map.addControl(new AMap.ToolBar({ position: 'RB' }));
+
+    // 图片加载器
+    const imageLoader = new ImageLoader();
+
+    // 存储所有标记点
+    const allPoints = [];
+    const markerPositions = [];
+
+    // 添加标记点和信息窗口
+    {% for marker in markers %}
+    (function() {
+      const position = [{{ marker.lng }}, {{ marker.lat }}];
+      allPoints.push(position);
+
+      // 创建标记
+      const marker = new AMap.Marker({
+        position: position,
+        title: "{{ marker.title }}",
+        map: map,
+        icon: new AMap.Icon({
+          size: new AMap.Size(44, 44),
+          image: 'https://a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-red.png',
+          imageSize: new AMap.Size(44, 44)
+        }),
+        offset: new AMap.Pixel(-22, -44),
+        animation: 'AMAP_ANIMATION_DROP'
+      });
+
+      // 标签
+      marker.setLabel({
+        direction: 'bottom',
+        offset: new AMap.Pixel(0, 6),
+        content: '<div style="padding:4px 8px;border-radius:6px;background:rgba(255,255,255,0.95);border:1px solid #e8e8e8;box-shadow:0 2px 8px rgba(0,0,0,0.08);font-size:12px;color:#333;">{{ marker.title }}</div>'
+      });
+
+      markerPositions.push(position);
+
+      // 构建信息窗口内容（带图片加载）
+      let infoContent = '<div class="custom-infowindow">';
+
+      // 图片容器
+      infoContent += '<div class="info-image-container" data-marker="{{ marker.title }}">';
+
+      {% if marker.image_urls and marker.image_urls|length > 0 %}
+        // 多图
+        const imageUrls = {{ marker.image_urls | tojson }};
+        infoContent += '<div class="image-loading"></div>';
+        infoContent += '</div>';
+
+        infoContent += '<div class="info-content">';
+        infoContent += '<div class="info-title">{{ marker.title }}</div>';
+        {% if marker.description %}
+        infoContent += '<div class="info-desc">{{ marker.description }}</div>';
+        {% endif %}
+        infoContent += '<div class="info-coords">坐标: {{ marker.lng }}, {{ marker.lat }}</div>';
+        infoContent += '</div></div>';
+
+        const infoWindow = new AMap.InfoWindow({
+          content: infoContent,
+          offset: new AMap.Pixel(0, -32),
+          autoMove: true,
+          closeWhenClickMap: true
+        });
+
+        marker.on('click', function() {
+          infoWindow.open(map, position);
+
+          // 延迟加载图片
+          setTimeout(() => {
+            const container = infoWindow.getContent().querySelector('.info-image-container');
+            if (container) {
+              imageLoader.loadImages(imageUrls, container);
+            }
+          }, 100);
+        });
+
+      {% elif marker.image_url %}
+        // 单图
+        infoContent += '<div class="image-loading"></div>';
+        infoContent += '</div>';
+
+        infoContent += '<div class="info-content">';
+        infoContent += '<div class="info-title">{{ marker.title }}</div>';
+        {% if marker.description %}
+        infoContent += '<div class="info-desc">{{ marker.description }}</div>';
+        {% endif %}
+        infoContent += '<div class="info-coords">坐标: {{ marker.lng }}, {{ marker.lat }}</div>';
+        infoContent += '</div></div>';
+
+        const infoWindow = new AMap.InfoWindow({
+          content: infoContent,
+          offset: new AMap.Pixel(0, -32),
+          autoMove: true,
+          closeWhenClickMap: true
+        });
+
+        marker.on('click', function() {
+          infoWindow.open(map, position);
+
+          // 延迟加载图片
+          setTimeout(() => {
+            const container = infoWindow.getContent().querySelector('.info-image-container');
+            if (container) {
+              imageLoader.loadImage('{{ marker.image_url }}', container);
+            }
+          }, 100);
+        });
+
+      {% else %}
+        // 无图片
+        infoContent += '<div class="image-error"><div>{{ marker.title }}</div><div style="font-size:11px;margin-top:5px;">暂无图片</div></div>';
+        infoContent += '</div>';
+
+        infoContent += '<div class="info-content">';
+        infoContent += '<div class="info-title">{{ marker.title }}</div>';
+        {% if marker.description %}
+        infoContent += '<div class="info-desc">{{ marker.description }}</div>';
+        {% endif %}
+        infoContent += '<div class="info-coords">坐标: {{ marker.lng }}, {{ marker.lat }}</div>';
+        infoContent += '</div></div>';
+
+        const infoWindow = new AMap.InfoWindow({
+          content: infoContent,
+          offset: new AMap.Pixel(0, -32),
+          autoMove: true,
+          closeWhenClickMap: true
+        });
+
+        marker.on('click', function() {
+          infoWindow.open(map, position);
+        });
+      {% endif %}
+    })();
+    {% endfor %}
+
+    // 绘制路线轨迹
+    {% if polyline_points %}
+    const path = [
+      {% for p in polyline_points %}
+      [{{ p.lng }}, {{ p.lat }}]{% if not loop.last %},{% endif %}
+      {% endfor %}
+    ];
+
+    const polyline = new AMap.Polyline({
+      path: path,
+      strokeColor: '#FF6B6B',
+      strokeWeight: 6,
+      strokeOpacity: 0.9,
+      strokeStyle: 'solid',
+      lineJoin: 'round',
+      lineCap: 'round',
+      showDir: true,
+      dirColor: '#FFFFFF',
+      zIndex: 50
+    });
+    polyline.setMap(map);
+    allPoints.push(...path);
+    {% endif %}
+
+    // 相邻标记点连线
+    if (markerPositions.length >= 2) {
+      for (let i = 0; i < markerPositions.length - 1; i++) {
+        const seg = new AMap.Polyline({
+          path: [markerPositions[i], markerPositions[i+1]],
+          strokeColor: '#3BA8F1',
+          strokeWeight: 3,
+          strokeOpacity: 0.8,
+          strokeStyle: 'dashed',
+          zIndex: 40
+        });
+        seg.setMap(map);
+      }
+      allPoints.push(...markerPositions);
+    }
+
+    // 自动调整视野
+    if (allPoints.length > 1) {
+      map.setFitView(null, false, [100, 100, 100, 100]);
+    }
+
+    // 地图加载完成
+    map.on('complete', function() {
+      console.log('✅ 地图加载完成');
+    });
+  </script>
+</body>
+</html>

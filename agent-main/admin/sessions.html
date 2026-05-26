@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>会话管理 - 管理员后台</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .filter-section {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .filter-group select {
+            padding: 8px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+        }
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        th {
+            background: #f9fafb;
+            font-weight: 600;
+            color: #6b7280;
+        }
+        tr:hover { background: #f9fafb; }
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .badge-active { background: #d1fae5; color: #065f46; }
+        .badge-archived { background: #fef3c7; color: #92400e; }
+        .badge-deleted { background: #fee2e2; color: #991b1b; }
+        code { color: #6b7280; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo">
+                <i class="fas fa-route"></i>
+                <span>下一站Youth</span>
+            </div>
+            <span class="badge">管理员后台</span>
+        </div>
+        <div class="navbar-right">
+            <span class="admin-info">
+                <i class="fas fa-user-shield"></i>
+                <span id="adminUsername">管理员</span>
+            </span>
+            <button class="btn btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> 退出
+            </button>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="/admin/dashboard.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i> 仪表板
+                </a>
+                <a href="/admin/users.html" class="menu-item">
+                    <i class="fas fa-users"></i> 用户管理
+                </a>
+                <a href="/admin/sessions.html" class="menu-item active">
+                    <i class="fas fa-comments"></i> 会话管理
+                </a>
+                <a href="/admin/configs.html" class="menu-item">
+                    <i class="fas fa-cogs"></i> 系统配置
+                </a>
+                <a href="/admin/logs.html" class="menu-item">
+                    <i class="fas fa-file-alt"></i> 审计日志
+                </a>
+                <a href="/" class="menu-item">
+                    <i class="fas fa-home"></i> 返回前台
+                </a>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="page-header">
+                <h1><i class="fas fa-comments"></i> 会话管理</h1>
+                <p class="page-desc">查看和管理所有用户的旅行规划会话</p>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-group">
+                    <label>状态筛选：</label>
+                    <select id="statusFilter" onchange="loadSessions()">
+                        <option value="">全部</option>
+                        <option value="active">活跃</option>
+                        <option value="archived">已归档</option>
+                        <option value="deleted">已删除</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>会话ID</th>
+                            <th>用户</th>
+                            <th>标题</th>
+                            <th>目的地</th>
+                            <th>状态</th>
+                            <th>消息数</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="sessionTableBody">
+                        <tr>
+                            <td colspan="8" style="text-align:center;">
+                                <i class="fas fa-spinner fa-spin"></i> 加载中...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <script src="/admin/js/admin.js"></script>
+    <script>
+        async function loadSessions() {
+            const status = document.getElementById('statusFilter').value;
+            const tbody = document.getElementById('sessionTableBody');
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> 加载中...</td></tr>';
+
+            try {
+                const url = '/sessions?limit=100' + (status ? '&status=' + status : '');
+                const response = await apiRequest(url);
+                if (response.success) {
+                    const sessions = response.data.sessions;
+                    if (sessions.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">暂无数据</td></tr>';
+                        return;
+                    }
+
+                    tbody.innerHTML = sessions.map(session => `
+                        <tr>
+                            <td><code>${session.conversation_id.substring(0, 16)}...</code></td>
+                            <td>${session.username}</td>
+                            <td>${session.title}</td>
+                            <td>${session.destination || '-'}</td>
+                            <td><span class="badge badge-${session.status}">${session.status}</span></td>
+                            <td>${session.message_count}</td>
+                            <td>${formatDate(session.created_at)}</td>
+                            <td>
+                                <button class="btn btn-sm btn-danger" onclick="deleteSession('${session.conversation_id}')">
+                                    <i class="fas fa-trash"></i> 删除
+                                </button>
+                            </td>
+                        </tr>
+                    `).join('');
+                }
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center; color:red;">加载失败</td></tr>';
+            }
+        }
+
+        async function deleteSession(conversationId) {
+            if (!confirm('确定要删除这个会话吗？')) return;
+
+            try {
+                const response = await apiRequest(`/sessions/${conversationId}`, { method: 'DELETE' });
+                if (response.success) {
+                    alert('会话删除成功');
+                    loadSessions();
+                } else {
+                    alert('删除失败: ' + (response.message || '未知错误'));
+                }
+            } catch (error) {
+                alert('删除失败');
+            }
+        }
+
+        // 页面加载时获取会话列表
+        loadSessions();
+    </script>
+</body>
+</html>

@@ -1,0 +1,299 @@
+/* ==================== 用户菜单和弹窗样式 ==================== */
+
+/* 用户菜单容器 */
+.user-menu {
+    position: relative;
+    display: inline-block;
+    margin-left: 20px;                            /* ✅ 从 15px 增加到 20px */
+    z-index: 1001;
+}
+
+/* 头像按钮 */
+.avatar-btn {
+    /* ✅ 应用紫蓝渐变，与主页保持一致 */
+    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+    border: none;
+    border-radius: 50%;
+    width: 54px;                                 /* ✅ 从 50px 增加到 54px */
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: white;
+    font-size: 30px;                              /* ✅ 从 28px 增加到 30px */
+    box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5); /* ✅ 使用紫色阴影 */
+    position: relative;
+    z-index: 1001;
+}
+
+.avatar-btn:hover {
+    transform: scale(1.18);                       /* ✅ 从 1.15 增加到 1.18 */
+    box-shadow: 0 8px 24px rgba(99, 102, 241, 0.7); /* ✅ 增强阴影 */
+}
+
+.avatar-btn i {
+    font-size: 30px;                              /* ✅ 从 28px 增加到 30px */
+}
+
+/* 已登录状态的头像图片 */
+.user-avatar-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* 下拉菜单 */
+.dropdown-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 12px);                     /* 从 10px 增加到 12px */
+    right: 0;
+    background: white;
+    border-radius: 14px;                         /* 从 12px 增加 */
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.18); /* 从 0 8px 24px 增强 */
+    min-width: 220px;                           /* 从 200px 增加 */
+    z-index: 1000;
+    overflow: hidden;
+    animation: dropdownFadeIn 0.25s ease;       /* 从 0.2s 增加到 0.25s */
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+@keyframes dropdownFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-12px);            /* 从 -10px 增加 */
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.dropdown-menu a {
+    display: flex;
+    align-items: center;
+    padding: 18px 24px;                          /* ✅ 从 16px 22px 增加到 18px 24px */
+    color: #333;
+    text-decoration: none;
+    transition: all 0.25s ease;                  /* 从 0.25s 保持 */
+    font-size: 17px;                            /* ✅ 从 16px 增加到 17px */
+    font-weight: 500;                            /* 保持 */
+}
+
+.dropdown-menu a:hover {
+    /* ✅ 应用紫蓝渐变，与主页保持一致 */
+    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+    color: white;
+    transform: translateX(6px);                  /* ✅ 从 4px 增加到 6px */
+}
+
+.dropdown-menu a i {
+    margin-right: 14px;                          /* 从 12px 增加 */
+    width: 18px;                                 /* 从 16px 增加 */
+    text-align: center;
+    font-size: 1.1em;                            /* 新增：图标放大 */
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: #e5e7eb;
+    margin: 10px 0;                              /* 从 8px 增加 */
+}
+
+/* ==================== 弹窗样式 ==================== */
+
+/* 通用弹窗遮罩 */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 2000;
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* 通用弹窗容器 */
+.login-prompt-modal,
+.confirm-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 2001;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-prompt-modal.show,
+.confirm-modal.show {
+    display: flex;
+}
+
+/* 弹窗内容 */
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 500px;
+    animation: slideUp 0.3s ease;
+    z-index: 2002;
+}
+
+.modal-content.small {
+    max-width: 400px;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* 弹窗头部 */
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2937;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-header h3 i {
+    color: #667eea;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #9ca3af;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: #374151;
+}
+
+/* 弹窗主体 */
+.modal-body {
+    padding: 24px;
+}
+
+.modal-body p {
+    margin: 0;
+    color: #4b5563;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* 弹窗底部 */
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e7eb;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* 按钮样式 */
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-secondary {
+    background: #f3f4f6;
+    color: #374151;
+}
+
+.btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.btn-primary {
+    /* ✅ 应用紫蓝渐变，与主页保持一致 */
+    background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.5); /* ✅ 使用紫色阴影 */
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    color: white;
+}
+
+.btn-danger:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+/* ==================== 响应式设计 ==================== */
+
+@media (max-width: 768px) {
+    .user-menu {
+        margin-left: 5px;
+    }
+
+    .avatar-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+    }
+
+    .dropdown-menu {
+        min-width: 180px;
+    }
+
+    .modal-content {
+        width: 95%;
+        margin: 10px;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+        padding: 16px;
+    }
+}

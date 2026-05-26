@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下一站Youth - 大学生专属智能旅游规划</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/static/css/main.css?v=9">
+    <link rel="stylesheet" href="/static/css/user-menu.css">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-route"></i>
+                <span>下一站Youth</span>
+                <ul class="nav-menu-inline">
+                    <li><a href="#home" class="active">首页</a></li>
+                    <li><a href="#features">功能特色</a></li>
+                </ul>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-primary" onclick="window.location.href='/planner'">
+                    <i class="fas fa-plus"></i> 开始规划
+                </button>
+
+                <!-- 用户头像区域（登录前显示默认图标，放在最右边） -->
+                <div class="user-menu" id="userMenu">
+                    <!-- 未登录状态：显示默认图标 -->
+                    <button class="avatar-btn" id="avatarBtn" onclick="handleAvatarClick()">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+
+                    <!-- 下拉菜单 -->
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="/profile.html" onclick="navigateToProfile(event)">
+                            <i class="fas fa-user"></i> 个人资料
+                        </a>
+                        <a href="/dashboard.html">
+                            <i class="fas fa-comments"></i> 我的会话
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="handleLogout(event)">
+                            <i class="fas fa-sign-out-alt"></i> 退出登录
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero区域 -->
+    <section class="hero">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+            <h1 class="hero-title" data-i18n="hero_title">下一站，你的青春之旅</h1>
+            <p class="hero-subtitle" data-i18n="hero_subtitle">小YOU为你定制专属旅行计划</p>
+
+            <!-- AI助手窗口 -->
+            <div class="ai-assistant-window">
+                <div class="ai-header">
+                    <div class="ai-brand">
+                        <div class="ai-avatar">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="ai-info">
+                            <h3>小You - 智能旅行规划助手</h3>
+                            <span class="ai-status online">在线</span>
+                        </div>
+                    </div>
+
+                    <!-- 模式切换按钮 -->
+                    <div class="ai-mode-switch">
+                        <button class="mode-switch-btn active" id="form-mode-btn" onclick="switchAIMode('form')">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>表单模式</span>
+                        </button>
+                        <button class="mode-switch-btn" id="chat-mode-btn" onclick="switchAIMode('chat')">
+                            <i class="fas fa-comments"></i>
+                            <span>对话模式</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 表单模式视图 -->
+                <div class="ai-view-container" id="form-mode-view">
+                    <div class="form-view-layout">
+                        <!-- 左侧：旅行规划表单 -->
+                        <div class="form-sidebar">
+                            <div class="travel-planning-form">
+                                <div class="form-section-title">
+                                    <i class="fas fa-map-marked-alt"></i>
+                                    旅行规划表单
+                                </div>
+
+                                <!-- 目的地 -->
+                                <div class="form-group full-width">
+                                    <label class="form-label">📍 想去哪个城市？</label>
+                                    <input type="text" class="form-input" id="destination" placeholder="例如：北京、上海、西安、成都、重庆...">
+                                </div>
+
+                                <!-- 日期选择 -->
+                                <div class="form-row">
+                                    <div class="form-group">
+                                        <label class="form-label">📅 开始日期</label>
+                                        <input type="date" class="form-input" id="start-date" placeholder="">
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="form-label">📅 结束日期</label>
+                                        <input type="date" class="form-input" id="end-date" placeholder="">
+                                    </div>
+                                </div>
+
+                                <!-- 预算 -->
+                                <div class="form-group full-width">
+                                    <label class="form-label">💰 总预算（元）</label>
+                                    <input type="number" class="form-input" id="budget" placeholder="建议：2-3天500-1000元，5-7天1500-2500元" value="1500">
+                                </div>
+
+                                <!-- 人数 -->
+                                <div class="form-group full-width">
+                                    <label class="form-label">👥 人数</label>
+                                    <input type="number" class="form-input" id="travelers" placeholder="旅行人数" value="1" min="1" max="20">
+                                    <small style="color: #6366F1; font-size: 0.8rem; margin-top: 0.25rem; display: block;">建议1-8人，人数越多拼房越省钱</small>
+                                </div>
+
+                                <!-- 旅行偏好 -->
+                                <div class="form-group full-width">
+                                    <label class="form-label">🎯 选择你的旅行风格（可选，不选择则按经典路线推荐）</label>
+                                    <div class="preference-count" id="preference-count">已选择0个偏好</div>
+                                    <div class="preferences-grid">
+                                        <div class="preference-item">
+                                            <input type="checkbox" id="pref-classic" value="经典打卡" onchange="updatePreferenceCount()">
+                                            <label for="pref-classic">🎓 经典打卡</label>
+                                        </div>
+                                        <div class="preference-item">
+                                            <input type="checkbox" id="pref-budget-food" value="平价美食" onchange="updatePreferenceCount()">
+                                            <label for="pref-budget-food">🍜 平价美食</label>
+                                        </div>
+                                        <div class="preference-item">
+                                            <input type="checkbox" id="pref-free" value="免费景点" onchange="updatePreferenceCount()">
+                                            <label for="pref-free">🆓 免费景点</label>
+                                        </div>
+                                        <div class="preference-item">
+                                            <input type="checkbox" id="pref-youth-hostel" value="青年旅舍" onchange="updatePreferenceCount()">
+                                            <label for="pref-youth-hostel">🏨 青年旅舍</label>
+                                        </div>
+                                        <div class="preference-item">
+                                            <input type="checkbox" id="pref-student-discount" value="学生优惠" onchange="updatePreferenceCount()">
+                                            <label for="pref-student-discount">🎫 学生优惠</label>
+                                        </div>
+                                        <div class="preference-item">
+                                            <input type="checkbox" id="pref-culture" value="文化探索" onchange="updatePreferenceCount()">
+                                            <label for="pref-culture">📚 文化探索</label>
+                                        </div>
+                                        <div class="preference-item">
+                                            <input type="checkbox" id="pref-nature" value="自然风光" onchange="updatePreferenceCount()">
+                                            <label for="pref-nature">🏔️ 自然风光</label>
+                                        </div>
+                                        <div class="preference-item">
+                                            <input type="checkbox" id="pref-photo" value="拍照圣地" onchange="updatePreferenceCount()">
+                                            <label for="pref-photo">📸 拍照圣地</label>
+                                        </div>
+                                        <div class="preference-item">
+                                            <input type="checkbox" id="pref-adventure" value="青春冒险" onchange="updatePreferenceCount()">
+                                            <label for="pref-adventure">🚲 青春冒险</label>
+                                        </div>
+                                        <div class="preference-item">
+                                            <input type="checkbox" id="pref-backpack" value="背包徒步" onchange="updatePreferenceCount()">
+                                            <label for="pref-backpack">🎒 背包徒步</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- 额外需求 -->
+                                <div class="form-group full-width">
+                                    <label class="form-label">💬 其他要求（选填）</label>
+                                    <textarea class="form-textarea" id="requirements" placeholder="例如：想去特定景点、几个人一起、有没有忌口等..."></textarea>
+                                </div>
+
+                                <!-- 提交按钮 -->
+                                <button class="form-submit-btn" onclick="submitTravelPlan()">
+                                    <i class="fas fa-rocket"></i>
+                                    开始规划我的穷游之旅
+                                </button>
+                            </div>
+
+                            <!-- 图片展示区域 -->
+                            <div class="result-display-area" id="image-area" style="display: none;">
+                                <div class="result-title">
+                                    <i class="fas fa-images"></i>
+                                    图片预览
+                                </div>
+                                <div class="image-gallery" id="image-gallery">
+                                    <!-- 图片将在这里动态加载 -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：聊天区域 -->
+                        <div class="form-chat-content">
+                            <div class="ai-messages" id="form-messages">
+                                <div class="message bot-message">
+                                    <div class="message-avatar">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <div class="message-content">
+                                        <p>你好！我是小You，你的智能旅行助手 ✨<br><br>请在左侧表单中填写你的旅行计划，我会为你生成详细的穷游攻略！</p>
+                                        <span class="message-time">刚刚</span>
+                                    </div>
+                                </div>
+
+                                <!-- 快捷选项 -->
+                                <div class="quick-options">
+                                    <div class="quick-option" onclick="sendQuickMessageByMode('帮我规划云南之旅', 'form')">
+                                        <i class="fas fa-mountain"></i>
+                                        <span>云南之旅</span>
+                                    </div>
+                                    <div class="quick-option" onclick="sendQuickMessageByMode('推荐成都美食攻略', 'form')">
+                                        <i class="fas fa-utensils"></i>
+                                        <span>成都美食</span>
+                                    </div>
+                                    <div class="quick-option" onclick="sendQuickMessageByMode('预算2000元的国内穷游推荐', 'form')">
+                                        <i class="fas fa-wallet"></i>
+                                        <span>穷游推荐</span>
+                                    </div>
+                                    <div class="quick-option" onclick="sendQuickMessageByMode('适合大学生的周边游', 'form')">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        <span>周边游</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 深度思考模式 -->
+                            <div class="deep-thinking-toggle-inline">
+                                <input type="checkbox" id="deep-thinking-form-chat" checked>
+                                <label for="deep-thinking-form-chat">
+                                    <i class="fas fa-brain"></i>
+                                    启用深度思考模式
+                                </label>
+                            </div>
+
+                            <!-- 新建会话和提示 -->
+                            <div class="form-chat-footer">
+                                <div class="form-mode-tip">
+                                    <i class="fas fa-info-circle"></i>
+                                    <span>会话已自动保存，可在对话模式中查看并继续提问</span>
+                                </div>
+                                <button class="btn-new-chat" onclick="createFormConversation()">
+                                    <i class="fas fa-plus-circle"></i>
+                                    新建会话
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 对话模式视图 -->
+                <div class="ai-view-container" id="chat-mode-view" style="display: none;">
+                    <div class="chat-view-layout">
+                        <!-- 左侧：会话管理侧边栏 -->
+                        <div class="chat-sidebar">
+                            <div class="sidebar-header">
+                                <h3><i class="fas fa-history"></i> 会话历史</h3>
+                                <button class="new-chat-btn" onclick="createNewChat()">
+                                    <i class="fas fa-plus"></i> 新建会话
+                                </button>
+                            </div>
+
+                            <!-- 会话列表 -->
+                            <div class="conversations-list" id="conversations-list">
+                                <div class="conversation-loading">
+                                    <i class="fas fa-spinner fa-spin"></i> 加载中...
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 右侧：聊天区域 -->
+                        <div class="chat-main">
+                            <div class="chat-messages" id="chat-messages">
+                                <div class="message bot-message">
+                                    <div class="message-avatar">
+                                        <i class="fas fa-robot"></i>
+                                    </div>
+                                    <div class="message-content">
+                                        <p>你好！我是小You，你的智能旅行助手 ✨<br><br>我们可以聊聊：<br>🌍 目的地推荐<br>🎒 旅行攻略<br>💰 省钱技巧<br>🏛️ 景点介绍<br>🍜 美食推荐<br><br>想聊什么，尽管问我！</p>
+                                        <span class="message-time">刚刚</span>
+                                    </div>
+                                </div>
+
+                                <!-- 快捷选项 -->
+                                <div class="quick-options">
+                                    <div class="quick-option" onclick="sendQuickMessageByMode('帮我规划云南之旅', 'chat')">
+                                        <i class="fas fa-mountain"></i>
+                                        <span>云南之旅</span>
+                                    </div>
+                                    <div class="quick-option" onclick="sendQuickMessageByMode('推荐成都美食攻略', 'chat')">
+                                        <i class="fas fa-utensils"></i>
+                                        <span>成都美食</span>
+                                    </div>
+                                    <div class="quick-option" onclick="sendQuickMessageByMode('预算2000元的国内穷游推荐', 'chat')">
+                                        <i class="fas fa-wallet"></i>
+                                        <span>穷游推荐</span>
+                                    </div>
+                                    <div class="quick-option" onclick="sendQuickMessageByMode('适合大学生的周边游', 'chat')">
+                                        <i class="fas fa-graduation-cap"></i>
+                                        <span>周边游</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 深度思考模式 -->
+                            <div class="deep-thinking-toggle-inline">
+                                <input type="checkbox" id="deep-thinking" checked>
+                                <label for="deep-thinking">
+                                    <i class="fas fa-brain"></i>
+                                    启用深度思考模式
+                                </label>
+                            </div>
+
+                            <div class="ai-input-area">
+                                <div class="ai-input-wrapper">
+                                    <input
+                                        type="text"
+                                        id="chat-input"
+                                        placeholder="告诉我你想去哪里..."
+                                        onkeypress="if(event.key === 'Enter') sendChatAIMessage()"
+                                    >
+                                    <button class="send-btn" onclick="sendChatAIMessage()">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <!-- 国内热门景点滚动窗口 -->
+    <section class="attractions-carousel" id="attractions">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title">💰 大学生穷游精选目的地</h2>
+                <p class="section-subtitle">高性价比、学生优惠、青春不等待</p>
+            </div>
+
+            <div class="carousel-wrapper">
+                <div class="carousel-track" id="attractions-track">
+                    <!-- 景点卡片 1: 云南大理 -->
+                    <div class="attraction-card">
+                        <div class="card-image">
+                            <img src="/static/images/attractions/dali.jpg" alt="云南大理">
+                            <div class="card-overlay">
+                                <span class="badge budget">💰 超高性价比</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3>云南大理</h3>
+                            <p class="price">¥500-1000/人 <span class="tag-green">穷游首选</span></p>
+                            <p class="description">洱海骑行、古城漫步、喜洲古镇</p>
+                            <button class="plan-btn" onclick="quickPlan('云南大理', '500-1000', '洱海骑行、古城漫步、喜洲古镇')">
+                                <i class="fas fa-magic"></i> 一键规划
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 景点卡片 2: 重庆 -->
+                    <div class="attraction-card">
+                        <div class="card-image">
+                            <img src="/static/images/attractions/chongqing.jpg" alt="重庆">
+                            <div class="card-overlay">
+                                <span class="badge food">🍜 美食天堂</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3>重庆</h3>
+                            <p class="price">¥600-1200/人 <span class="tag-red">火锅控必去</span></p>
+                            <p class="description">洪崖洞、解放碑、磁器口、李子坝</p>
+                            <button class="plan-btn" onclick="quickPlan('重庆', '600-1200', '洪崖洞夜景、解放碑、磁器口古镇')">
+                                <i class="fas fa-magic"></i> 一键规划
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 景点卡片 3: 成都 -->
+                    <div class="attraction-card">
+                        <div class="card-image">
+                            <img src="/static/images/attractions/chengdu.jpg" alt="四川成都">
+                            <div class="card-overlay">
+                                <span class="badge popular">🎓 学生优惠多</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3>四川成都</h3>
+                            <p class="price">¥800-1500/人 <span class="tag-orange">熊猫基地</span></p>
+                            <p class="description">大熊猫基地、锦里、都江堰、春熙路</p>
+                            <button class="plan-btn" onclick="quickPlan('成都', '800-1500', '大熊猫基地、锦里古街、都江堰')">
+                                <i class="fas fa-magic"></i> 一键规划
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 景点卡片 4: 西安 -->
+                    <div class="attraction-card">
+                        <div class="card-image">
+                            <img src="/static/images/attractions/xian.jpg" alt="陕西西安">
+                            <div class="card-overlay">
+                                <span class="badge classic">🏛️ 历史文化</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3>陕西西安</h3>
+                            <p class="price">¥700-1400/人 <span class="tag-purple">古都风情</span></p>
+                            <p class="description">兵马俑、大雁塔、回民街、古城墙</p>
+                            <button class="plan-btn" onclick="quickPlan('西安', '700-1400', '兵马俑、大雁塔、回民街美食')">
+                                <i class="fas fa-magic"></i> 一键规划
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 景点卡片 5: 厦门 -->
+                    <div class="attraction-card">
+                        <div class="card-image">
+                            <img src="/static/images/attractions/xiamen.jpg" alt="福建厦门">
+                            <div class="card-overlay">
+                                <span class="badge romantic">🌊 海岛风情</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3>福建厦门</h3>
+                            <p class="price">¥900-1800/人 <span class="tag-blue">文艺清新</span></p>
+                            <p class="description">鼓浪屿、曾厝垵、环岛路、沙坡尾</p>
+                            <button class="plan-btn" onclick="quickPlan('厦门', '900-1800', '鼓浪屿、曾厝垵、环岛路骑行')">
+                                <i class="fas fa-magic"></i> 一键规划
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 景点卡片 6: 贵阳 -->
+                    <div class="attraction-card">
+                        <div class="card-image">
+                            <img src="/static/images/attractions/guiyang.jpg" alt="贵州贵阳">
+                            <div class="card-overlay">
+                                <span class="badge adventure">🎒 原始秘境</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3>贵州贵阳</h3>
+                            <p class="price">¥800-1600/人 <span class="tag-cyan">山水秘境</span></p>
+                            <p class="description">青岩古镇、黔灵山、甲秀楼、小吃街</p>
+                            <button class="plan-btn" onclick="quickPlan('贵阳', '800-1600', '青岩古镇、黔灵山公园、甲秀楼')">
+                                <i class="fas fa-magic"></i> 一键规划
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 景点卡片 7: 桂林 -->
+                    <div class="attraction-card">
+                        <div class="card-image">
+                            <img src="/static/images/attractions/guilin.jpg" alt="广西桂林">
+                            <div class="card-overlay">
+                                <span class="badge beautiful">🏞️ 山水甲天下</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3>广西桂林</h3>
+                            <p class="price">¥600-1200/人 <span class="tag-green">超值体验</span></p>
+                            <p class="description">漓江竹筏、阳朔西街、象鼻山、遇龙河</p>
+                            <button class="plan-btn" onclick="quickPlan('桂林', '600-1200', '漓江竹筏、阳朔西街、象鼻山')">
+                                <i class="fas fa-magic"></i> 一键规划
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 景点卡片 8: 长沙 -->
+                    <div class="attraction-card">
+                        <div class="card-image">
+                            <img src="/static/images/attractions/changsha.jpg" alt="湖南长沙">
+                            <div class="card-overlay">
+                                <span class="badge hot">🔥 网红打卡</span>
+                            </div>
+                        </div>
+                        <div class="card-content">
+                            <h3>湖南长沙</h3>
+                            <p class="price">¥700-1300/人 <span class="tag-red">夜生活丰富</span></p>
+                            <p class="description">橘子洲、岳麓山、五一广场、坡子街</p>
+                            <button class="plan-btn" onclick="quickPlan('长沙', '700-1300', '橘子洲头、岳麓山、五一广场')">
+                                <i class="fas fa-magic"></i> 一键规划
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="carousel-controls">
+                    <button class="carousel-btn prev" onclick="moveCarousel(-1)">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="carousel-btn next" onclick="moveCarousel(1)">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 功能特色 -->
+    <section class="features" id="features">
+        <div class="container">
+            <div class="section-header">
+                <h2 class="section-title" data-i18n="why_choose_us">为什么选择下一站Youth</h2>
+                <p class="section-subtitle" data-i18n="features_subtitle">专为大学生打造的智能旅行规划平台</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3 data-i18n="ai_planning">AI智能助手</h3>
+                    <p data-i18n="ai_planning_desc">24小时在线的智能助手，秒速响应你的旅行需求</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-piggy-bank"></i>
+                    </div>
+                    <h3 data-i18n="budget_friendly">超值省钱</h3>
+                    <p data-i18n="budget_friendly_desc">智能规划最优预算路线，学生优惠一网打尽</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3 data-i18n="student_benefits">学生专属</h3>
+                    <p data-i18n="student_benefits_desc">景区学生票、青旅推荐，专为在校学生定制</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3 data-i18n="group_travel">结伴同行</h3>
+                    <p data-i18n="group_travel_desc">寻找旅伴、拼车拼房，分享旅途快乐</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-book-open"></i>
+                    </div>
+                    <h3 data-i18n="rich_guides">旅行攻略</h3>
+                    <p data-i18n="rich_guides_desc">海量真实旅行游记和经验分享</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h3 data-i18n="safe_travel">安全保障</h3>
+                    <p data-i18n="safe_travel_desc">安全提示、紧急求助、行程分享</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA区域 -->
+    <section class="cta">
+        <div class="container">
+            <h2 data-i18n="cta_title">准备好开始你的青春之旅了吗?</h2>
+            <p data-i18n="cta_subtitle">立即创建专属旅行计划，开启精彩旅程</p>
+            <button class="btn-large" onclick="window.location.href='/planner'">
+                <i class="fas fa-rocket"></i> <span data-i18n="start_journey">立即出发</span>
+            </button>
+        </div>
+    </section>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content-simple">
+                <h2 class="footer-title"><i class="fas fa-route"></i> 下一站Youth</h2>
+                <p class="footer-description">大学生专属智能旅游规划助手，让每一次旅行都成为美好回忆</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 登录提示弹窗 -->
+    <div class="login-prompt-modal" id="loginPromptModal">
+        <div class="modal-overlay" onclick="closeLoginPrompt()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> 提示</h3>
+                <button class="modal-close" onclick="closeLoginPrompt()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>访问此功能需要先登录</p>
+                <p style="color: #666; font-size: 14px; margin-top: 10px;">登录后可以保存历史对话和管理会话</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeLoginPrompt()">取消</button>
+                <button class="btn btn-primary" onclick="goToLogin()">去登录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 退出确认对话框 -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="modal-overlay" onclick="closeConfirmModal()"></div>
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h3><i class="fas fa-sign-out-alt"></i> 退出登录</h3>
+                <button class="modal-close" onclick="closeConfirmModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>确定要退出吗？</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()">取消</button>
+                <button class="btn btn-danger" onclick="confirmLogout()">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI进度条卡片（右下角） -->
+    <div class="ai-progress-card" id="aiProgressCard" style="display: none;">
+        <div class="ai-progress-header">
+            <div class="ai-progress-icon">
+                <i class="fas fa-robot"></i>
+            </div>
+            <div class="ai-progress-text">
+                <span class="ai-progress-title">小You正在思考...</span>
+                <span class="ai-progress-percent" id="aiProgressPercent">0%</span>
+            </div>
+        </div>
+        <div class="ai-progress-bar-container">
+            <div class="ai-progress-bar" id="aiProgressBar">
+                <div class="ai-progress-fill" id="aiProgressFill"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Markdown 渲染库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+    <!-- 先加载 main.js（定义基础函数） -->
+    <script src="/static/js/main.js?v=13"></script>
+    <!-- 后加载 user-auth.js（可能依赖 main.js） -->
+    <script src="/static/js/user-auth.js?v=9"></script>
+
+    <!-- 登录检查：主页不需要登录，但如果用户已登录则初始化用户信息 -->
+    <script>
+        // 页面加载完成后，确保用户认证系统已初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[index.html] DOM已加载，初始化用户认证');
+            // index.html 不强制要求登录，但会显示用户状态
+            if (typeof window.initializeUserAuth === 'function') {
+                // 不要求登录，只初始化用户状态
+                window.initializeUserAuth(false);
+            }
+        });
+    </script>
+</body>
+</html>

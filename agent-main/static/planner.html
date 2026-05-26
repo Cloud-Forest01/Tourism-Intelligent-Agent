@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>行程规划 - 下一站Youth</title>
+    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="/static/css/planner.css?v=15">
+    <link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 高德地图API -->
+    <script src="https://webapi.amap.com/maps?v=2.0&key=cadea0abad29ee426b63d7e45885e226"></script>
+    <!-- Markdown渲染库 (本地) -->
+    <script src="/static/libs/marked.min.js"></script>
+    <script src="/static/libs/purify.min.js"></script>
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand" onclick="window.location.href='/'">
+                <i class="fas fa-route"></i>
+                <span>下一站Youth</span>
+            </div>
+            <div class="nav-title">智能行程规划</div>
+            <div class="nav-actions">
+                <button class="btn-secondary" onclick="window.location.href='/'">
+                    <i class="fas fa-home"></i> 返回首页
+                </button>
+                <button class="btn-secondary" onclick="document.getElementById('load-file-input').click()">
+                    <i class="fas fa-folder-open"></i> 加载行程
+                </button>
+                <input type="file" id="load-file-input" accept=".json" style="display: none;" onchange="loadItineraryFromFile(event)">
+                <button class="btn-primary" onclick="saveItinerary()">
+                    <i class="fas fa-save"></i> 保存行程
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="planner-container">
+        <!-- 左侧面板:行程信息 -->
+        <aside class="sidebar-left">
+            <div class="panel trip-info">
+                <h2><i class="fas fa-info-circle"></i> 行程信息</h2>
+
+                <!-- 旅行语录 -->
+                <div class="travel-quote">
+                    <i class="fas fa-quote-left"></i>
+                    <span id="daily-quote">年轻的时候，旅行是教育的一部分；年老的时候，旅行是经验的一部分。</span>
+                    <i class="fas fa-quote-right"></i>
+                </div>
+
+                <div class="info-form">
+                    <div class="form-group">
+                        <label>目的地</label>
+                        <input type="text" id="destination" placeholder="输入目的地" value="">
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>开始日期</label>
+                            <input type="date" id="start-date">
+                        </div>
+                        <div class="form-group">
+                            <label>结束日期</label>
+                            <input type="date" id="end-date">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>旅行天数</label>
+                            <input type="number" id="trip-days" value="3" min="1" max="30">
+                        </div>
+                        <div class="form-group">
+                            <label>人数</label>
+                            <input type="number" id="travelers" value="1" min="1">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label>预算 (元)</label>
+                        <input type="number" id="budget" placeholder="可选" min="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label>兴趣偏好（最多选3个）</label>
+                        <div class="preferences-grid" id="interests-tags">
+                            <div class="preference-item">
+                                <input type="checkbox" id="pref-classic-planner" value="经典打卡">
+                                <label for="pref-classic-planner">🎓 经典打卡</label>
+                            </div>
+                            <div class="preference-item">
+                                <input type="checkbox" id="pref-budget-food-planner" value="平价美食">
+                                <label for="pref-budget-food-planner">🍜 平价美食</label>
+                            </div>
+                            <div class="preference-item">
+                                <input type="checkbox" id="pref-free-planner" value="免费景点">
+                                <label for="pref-free-planner">🆓 免费景点</label>
+                            </div>
+                            <div class="preference-item">
+                                <input type="checkbox" id="pref-youth-hostel-planner" value="青年旅舍">
+                                <label for="pref-youth-hostel-planner">🏨 青年旅舍</label>
+                            </div>
+                            <div class="preference-item">
+                                <input type="checkbox" id="pref-student-discount-planner" value="学生优惠">
+                                <label for="pref-student-discount-planner">🎫 学生优惠</label>
+                            </div>
+                            <div class="preference-item">
+                                <input type="checkbox" id="pref-culture-planner" value="文化体验">
+                                <label for="pref-culture-planner">🏛️ 文化体验</label>
+                            </div>
+                            <div class="preference-item">
+                                <input type="checkbox" id="pref-nature-planner" value="自然风光">
+                                <label for="pref-nature-planner">🌳 自然风光</label>
+                            </div>
+                            <div class="preference-item">
+                                <input type="checkbox" id="pref-shopping-planner" value="购物">
+                                <label for="pref-shopping-planner">🛍️ 购物</label>
+                            </div>
+                            <div class="preference-item">
+                                <input type="checkbox" id="pref-nightlife-planner" value="夜生活">
+                                <label for="pref-nightlife-planner">🌙 夜生活</label>
+                            </div>
+                        </div>
+                        <div class="preference-count" id="preference-count-planner" style="margin-top: 0.5rem; font-size: 0.875rem; color: #6366F1;">
+                            已选择0个偏好
+                        </div>
+                    </div>
+
+                    <!-- 深度思考模式 -->
+                    <div class="deep-thinking-toggle-inline" style="margin-bottom: 1rem;">
+                        <input type="checkbox" id="deep-thinking-planner">
+                        <label for="deep-thinking-planner">
+                            <i class="fas fa-brain"></i>
+                            启用深度思考模式
+                        </label>
+                    </div>
+
+                    <button class="btn-generate" onclick="generateAITripV2()">
+                        <i class="fas fa-magic"></i> AI智能生成行程
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 中间:地图区域 -->
+        <main class="map-area">
+            <div class="map-toolbar">
+                <!-- 左侧：留空 -->
+                <div class="toolbar-group">
+                </div>
+
+                <!-- 中间：行程标题 -->
+                <div class="trip-title" id="trip-title">
+                    <span>小YOU的行程规划</span>
+                </div>
+
+                <!-- 右侧：留空 -->
+                <div class="toolbar-group">
+                </div>
+            </div>
+
+            <div id="map-container" class="map-container"></div>
+        </main>
+
+        <!-- 右侧面板:AI行程展示 -->
+        <aside class="sidebar-right">
+            <div class="panel itinerary-panel">
+                <div class="panel-header">
+                    <h2><i class="fas fa-robot"></i> 小YOU的行程规划</h2>
+                </div>
+
+                <div class="ai-conversation" id="ai-conversation">
+                    <!-- AI对话内容 -->
+                    <div class="empty-state">
+                        <i class="fas fa-robot"></i>
+                        <p>点击"AI智能生成行程"开始规划</p>
+                        <p class="hint">小YOU将为您生成详细的行程安排和地图标记</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- AI生成进度弹窗 -->
+    <div id="ai-progress-modal" class="modal">
+        <div class="modal-content progress-modal">
+            <div class="modal-body">
+                <!-- 跳跃的机器人 -->
+                <div class="robot-animation">
+                    <div class="robot-bounce">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                </div>
+
+                <h3>小YOU正在为您规划行程...</h3>
+
+                <p id="ai-progress-text">正在分析目的地信息</p>
+
+                <!-- 进度百分比显示 -->
+                <div class="progress-percentage" id="progress-percentage">0%</div>
+
+                <!-- 进度条 -->
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progress-fill"></div>
+                </div>
+
+                <!-- 进度阶段 -->
+                <div class="progress-steps" id="progress-steps">
+                    <div class="progress-step" data-step="1">
+                        <i class="far fa-circle"></i>
+                        <span>分析目的地</span>
+                    </div>
+                    <div class="progress-step" data-step="2">
+                        <i class="far fa-circle"></i>
+                        <span>搜索景点</span>
+                    </div>
+                    <div class="progress-step" data-step="3">
+                        <i class="far fa-circle"></i>
+                        <span>规划路线</span>
+                    </div>
+                    <div class="progress-step" data-step="4">
+                        <i class="far fa-circle"></i>
+                        <span>优化预算</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS文件加载顺序：先加载辅助工具，再加载地图模块 -->
+    <script src="/static/js/planner.js?v=7"></script>
+    <script src="/static/js/planner-v2.js?v=9"></script>
+
+    <!-- 用户认证系统（确保在 planner.js 之后加载） -->
+    <script src="/static/js/user-auth.js"></script>
+
+    <!-- 登录检查：规划页面需要登录 -->
+    <script>
+        // 页面加载完成后，检查登录状态
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[planner.html] DOM已加载，检查登录状态');
+            if (typeof window.initializeUserAuth === 'function') {
+                // 规划页面要求登录
+                window.initializeUserAuth(true);
+            } else {
+                console.error('[planner.html] user-auth.js 未加载，无法进行登录检查');
+            }
+        });
+    </script>
+</body>
+</html>

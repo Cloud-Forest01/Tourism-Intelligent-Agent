@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>系统配置 - 管理员后台</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .config-section {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        .config-section h2 {
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #2c3e50;
+            font-size: 18px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        .config-item {
+            padding: 15px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+        .config-item:hover {
+            border-color: #3498db;
+            box-shadow: 0 2px 4px rgba(52, 152, 219, 0.1);
+        }
+        .config-info {
+            flex: 1;
+        }
+        .config-key {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 4px;
+        }
+        .config-desc {
+            font-size: 13px;
+            color: #6b7280;
+        }
+        .config-value {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .config-value input {
+            padding: 8px 12px;
+            border: 1px solid #e5e7eb;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            min-width: 200px;
+        }
+        .config-value input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        .config-value input.sensitive {
+            background: #fef3c7;
+        }
+        .btn-edit {
+            padding: 6px 12px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background 0.3s;
+        }
+        .btn-edit:hover {
+            background: #2980b9;
+        }
+        .btn-save {
+            background: #10b981;
+        }
+        .btn-save:hover {
+            background: #059669;
+        }
+        .btn-cancel {
+            background: #6b7280;
+        }
+        .btn-cancel:hover {
+            background: #4b5563;
+        }
+        .status-message {
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 10px;
+            display: none;
+        }
+        .status-success {
+            background: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
+        }
+        .status-error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+        .help-text {
+            background: #eff6ff;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            margin-bottom: 20px;
+        }
+        .help-text h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #1e40af;
+        }
+        .help-text ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .help-text li {
+            margin-bottom: 6px;
+            color: #3730a3;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo">
+                <i class="fas fa-route"></i>
+                <span>下一站Youth</span>
+            </div>
+            <span class="badge">管理员后台</span>
+        </div>
+        <div class="navbar-right">
+            <span class="admin-info">
+                <i class="fas fa-user-shield"></i>
+                <span id="adminUsername">管理员</span>
+            </span>
+            <button class="btn btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> 退出
+            </button>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="/admin/dashboard.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i> 仪表板
+                </a>
+                <a href="/admin/users.html" class="menu-item">
+                    <i class="fas fa-users"></i> 用户管理
+                </a>
+                <a href="/admin/sessions.html" class="menu-item">
+                    <i class="fas fa-comments"></i> 会话管理
+                </a>
+                <a href="/admin/configs.html" class="menu-item active">
+                    <i class="fas fa-cogs"></i> 系统配置
+                </a>
+                <a href="/admin/logs.html" class="menu-item">
+                    <i class="fas fa-file-alt"></i> 审计日志
+                </a>
+                <a href="/" class="menu-item">
+                    <i class="fas fa-home"></i> 返回前台
+                </a>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="page-header">
+                <h1><i class="fas fa-cogs"></i> 系统配置</h1>
+                <p class="page-desc">查看和修改系统配置参数</p>
+            </div>
+
+            <div class="help-text">
+                <h3><i class="fas fa-info-circle"></i> 使用说明</h3>
+                <ul>
+                    <li>点击"编辑"按钮可以修改配置值</li>
+                    <li>敏感信息（如API Key）显示为 <code>***xxxx</code>，更新时需输入完整值</li>
+                    <li>配置更新后立即生效，无需重启服务</li>
+                    <li>修改后的配置存储在数据库中，优先级高于环境变量</li>
+                </ul>
+            </div>
+
+            <div id="configsContainer">
+                <p style="text-align:center;"><i class="fas fa-spinner fa-spin"></i> 加载中...</p>
+            </div>
+
+            <div id="statusMessage" class="status-message"></div>
+        </main>
+    </div>
+
+    <script src="/admin/js/admin.js"></script>
+    <script>
+        let originalValues = {}; // 保存原始值，用于取消编辑
+
+        async function loadConfigs() {
+            const container = document.getElementById('configsContainer');
+
+            try {
+                const response = await apiRequest('/configs');
+                if (response.success) {
+                    const configs = response.data;
+                    let html = '';
+
+                    for (const [category, items] of Object.entries(configs)) {
+                        html += `
+                            <div class="config-section">
+                                <h2><i class="fas fa-folder"></i> ${category}</h2>
+                                ${items.map(item => {
+                                    const isSensitive = item.sensitive || false;
+                                    originalValues[item.key] = item.value;
+
+                                    return `
+                                        <div class="config-item" id="config-${item.key}">
+                                            <div class="config-info">
+                                                <div class="config-key">${item.key}</div>
+                                                <div class="config-desc">${item.description}</div>
+                                            </div>
+                                            <div class="config-value">
+                                                <input type="text"
+                                                       id="input-${item.key}"
+                                                       value="${item.value}"
+                                                       class="${isSensitive ? 'sensitive' : ''}"
+                                                       readonly>
+                                                <button class="btn-edit"
+                                                        id="btn-${item.key}"
+                                                        onclick="toggleEdit('${item.key}', ${item.editable})">
+                                                    <i class="fas fa-edit"></i> 编辑
+                                                </button>
+                                            </div>
+                                        </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        `;
+                    }
+
+                    container.innerHTML = html;
+                }
+            } catch (error) {
+                container.innerHTML = '<p style="text-align:center; color:red;">加载失败</p>';
+            }
+        }
+
+        function toggleEdit(key, editable) {
+            if (!editable) {
+                showStatus('该配置项不可编辑', 'error');
+                return;
+            }
+
+            const input = document.getElementById(`input-${key}`);
+            const button = document.getElementById(`btn-${key}`);
+            const isEditing = !input.readOnly;
+
+            if (isEditing) {
+                // 当前是编辑状态，点击后保存
+                saveConfig(key);
+            } else {
+                // 当前是只读状态，点击后进入编辑
+                input.readOnly = false;
+                input.focus();
+                input.select();
+                button.innerHTML = '<i class="fas fa-save"></i> 保存';
+                button.classList.add('btn-save');
+
+                // 添加取消按钮
+                const cancelBtn = document.createElement('button');
+                cancelBtn.className = 'btn-edit btn-cancel';
+                cancelBtn.innerHTML = '<i class="fas fa-times"></i> 取消';
+                cancelBtn.style.marginLeft = '5px';
+                cancelBtn.onclick = () => cancelEdit(key);
+                button.parentNode.appendChild(cancelBtn);
+            }
+        }
+
+        function cancelEdit(key) {
+            const input = document.getElementById(`input-${key}`);
+            const button = document.getElementById(`btn-${key}`);
+            const parent = button.parentNode;
+
+            // 恢复原始值
+            input.value = originalValues[key];
+            input.readOnly = true;
+
+            // 恢复按钮状态
+            button.innerHTML = '<i class="fas fa-edit"></i> 编辑';
+            button.classList.remove('btn-save');
+
+            // 移除取消按钮
+            const cancelBtn = parent.querySelector('.btn-cancel');
+            if (cancelBtn) cancelBtn.remove();
+        }
+
+        async function saveConfig(key) {
+            const input = document.getElementById(`input-${key}`);
+            const button = document.getElementById(`btn-${key}`);
+            const newValue = input.value.trim();
+
+            if (!newValue) {
+                showStatus('配置值不能为空', 'error');
+                return;
+            }
+
+            // 显示保存中状态
+            button.disabled = true;
+            button.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 保存中...';
+
+            try {
+                const response = await apiRequest('/configs', {
+                    method: 'PUT',
+                    body: JSON.stringify({
+                        key: key,
+                        value: newValue
+                    })
+                });
+
+                if (response.success) {
+                    // 保存成功
+                    originalValues[key] = newValue;
+                    input.readOnly = true;
+                    button.innerHTML = '<i class="fas fa-edit"></i> 编辑';
+                    button.classList.remove('btn-save');
+                    button.disabled = false;
+
+                    // 移除取消按钮
+                    const cancelBtn = button.parentNode.querySelector('.btn-cancel');
+                    if (cancelBtn) cancelBtn.remove();
+
+                    showStatus(`配置 "${key}" 更新成功`, 'success');
+                } else {
+                    throw new Error(response.message || '更新失败');
+                }
+            } catch (error) {
+                button.innerHTML = '<i class="fas fa-save"></i> 保存';
+                button.disabled = false;
+                showStatus(`更新失败: ${error.message}`, 'error');
+            }
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message status-${type}`;
+            statusDiv.style.display = 'block';
+
+            // 3秒后自动隐藏
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        // 页面加载时获取配置
+        loadConfigs();
+    </script>
+</body>
+</html>

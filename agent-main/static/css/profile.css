@@ -1,0 +1,871 @@
+/* ==================== 个人资料页面样式 - 横向布局版 ==================== */
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    width: 100%;
+    height: 100%;
+}
+
+:root {
+    /* ✅ 改为蓝紫渐变主题 */
+    --primary-gradient: linear-gradient(135deg, #3B82F6 0%, #8B5CF6 100%);
+    --primary-color: #3B82F6;
+    --secondary-color: #8B5CF6;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --bg-primary: #f9fafb;
+    --bg-card: #ffffff;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    /* ✅ 增大基础字体大小 - 从 18px 提升到 20px */
+    font-size: 20px;
+    /* ✅ 设置视口高度，确保内容适应一屏 */
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ==================== 顶部导航栏 ==================== */
+
+.top-nav {
+    background: rgba(255, 255, 255, 0.98);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    border-bottom: 2px solid rgba(102, 126, 234, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    transition: all 0.3s ease;
+    flex-shrink: 0;
+}
+
+.nav-container {
+    /* ✅ 移除宽度限制，使用全屏宽度 */
+    width: 100%;
+    padding: 1.5rem 32px;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.back-btn {
+    background: var(--primary-gradient);
+    border: none;
+    color: white;
+    padding: 0.875rem 1.75rem;
+    border-radius: 50px; /* ✅ 改为完全圆角 */
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.625rem;
+    font-size: 1.0625rem;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+    text-decoration: none;
+}
+
+.back-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-xl);
+}
+
+.page-title {
+    color: var(--text-primary);
+    font-size: 2.2rem; /* 从 2rem 增加到 2.2rem */
+    font-weight: 800;
+    letter-spacing: 1px;
+    text-shadow: 0 2px 4px rgba(102, 126, 234, 0.2);
+}
+
+/* ==================== 主容器 - 全屏宽度布局 ==================== */
+
+.profile-container {
+    /* ✅ 移除宽度限制，使用全屏宽度 */
+    width: 100%;
+    /* ✅ 减少容器上下内边距，确保一屏显示 */
+    padding: 24px 32px;
+    /* ✅ 自适应高度，填充剩余空间 */
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* 允许flex子项滚动 */
+}
+
+/* ==================== 个人资料内容 - 全屏双栏布局 ==================== */
+
+.profile-content {
+    display: flex !important;
+    gap: 20px;
+    /* ✅ 填充整个可用空间 */
+    flex: 1 !important;
+    min-height: 0;
+    animation: fadeIn 0.4s ease;
+    /* ✅ 使用全宽 */
+    width: 100% !important;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==================== 左侧栏 - 头像 + 基本信息 + 退出登录 ==================== */
+
+.profile-sidebar {
+    /* ✅ 固定宽度，包含头像、基本信息卡片和退出按钮 */
+    width: 280px; /* 从 320px 减少到 280px */
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 12px; /* 从 16px 减少到 12px */
+}
+
+.profile-header {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px; /* 从 24px 减少到 20px */
+    text-align: center;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px; /* 从 16px 减少到 12px */
+}
+
+.avatar-section {
+    position: relative;
+    display: inline-block;
+}
+
+.avatar-large {
+    width: 80px; /* 从 100px 减少到 80px */
+    height: 80px;
+    background: var(--primary-gradient);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    /* ✅ 增大头像图标字体 - 从 40px 提升到 48px */
+    font-size: 36px; /* 从 48px 减少到 36px */
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+    overflow: hidden;
+}
+
+.user-greeting h2 {
+    /* ✅ 增大问候语字体 */
+    font-size: 22px; /* 从 20px 增加到 22px */
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.logout-section {
+    /* ✅ 移除 flex: 1，让按钮自然排列 */
+    display: flex;
+    align-items: center;
+}
+
+/* ==================== 右侧栏 - 账户信息 + 统计数据 + 最近会话 ==================== */
+
+.profile-main {
+    /* ✅ 占据剩余空间 */
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    /* ✅ 允许整区域滚动 */
+    overflow-y: auto;
+    padding-right: 4px; /* 滚动条间距 */
+}
+
+/* 自定义滚动条样式 */
+.profile-main::-webkit-scrollbar {
+    width: 6px;
+}
+
+.profile-main::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.profile-main::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+.profile-main::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+/* ==================== 信息卡片样式 ==================== */
+
+.info-card-inline {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 16px; /* 从 20px 减少到 16px */
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+/* ==================== 账户信息卡片 - 超紧凑版 ==================== */
+
+.account-info-compact {
+    /* ✅ 进一步压缩账户信息卡片的内边距 */
+    padding: 12px 16px; /* 从 padding: 16px 20px 减少到 padding: 12px 16px */
+}
+
+.account-info-compact .card-header {
+    /* ✅ 进一步减少账户信息的标题底部间距 */
+    margin-bottom: 8px; /* 从 margin-bottom: 12px 减少到 margin-bottom: 8px */
+    padding-bottom: 8px; /* 从 padding-bottom: 10px 减少到 padding-bottom: 8px */
+}
+
+.account-info-compact .info-item {
+    /* ✅ 进一步减少账户信息项的内边距 */
+    padding: 6px 0; /* 从 padding: 8px 0 减少到 padding: 6px 0 */
+}
+
+.account-info-compact .info-label,
+.account-info-compact .info-value {
+    /* ✅ 增大账户信息字体 */
+    font-size: 16px; /* 从 14px 增加到 16px */
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px; /* 从 16px 减少到 12px */
+    padding-bottom: 10px; /* 从 12px 减少到 10px */
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-header i {
+    font-size: 18px; /* 从 20px 减少到 18px */
+    color: var(--primary-color);
+}
+
+.card-header h3 {
+    flex: 1;
+    /* ✅ 增大卡片标题字体 */
+    font-size: 20px; /* 从 18px 增加到 20px */
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0; /* 从 10px 0 保持 */
+    border-bottom: 1px dashed var(--border-color);
+}
+
+.info-item:last-child {
+    border-bottom: none;
+}
+
+.info-label {
+    color: var(--text-secondary);
+    /* ✅ 增大信息标签字体 */
+    font-size: 18px; /* 从 17px 增加到 18px */
+    font-weight: 500;
+}
+
+.info-value {
+    color: var(--text-primary);
+    /* ✅ 增大信息值字体 */
+    font-size: 18px; /* 从 17px 增加到 18px */
+    font-weight: 500;
+}
+
+.info-value.value-highlight {
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 600;
+}
+
+/* ==================== 统计数据 - 紧凑版 ==================== */
+
+.stats-section {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 16px; /* 从 20px 减少到 16px */
+    box-shadow: var(--shadow-sm);
+}
+
+.section-header-inline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px; /* 从 16px 减少到 12px */
+}
+
+.section-header-inline i {
+    font-size: 18px; /* 从 20px 减少到 18px */
+    color: var(--primary-color);
+}
+
+.section-header-inline h3 {
+    /* ✅ 增大区块标题字体 */
+    font-size: 20px; /* 从 18px 增加到 20px */
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+    flex: 1;
+}
+
+.stats-grid {
+    display: grid;
+    /* ✅ 改为自适应网格，根据内容自动调整 */
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 12px; /* 从 16px 减少到 12px */
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #f9fafb 0%, #f3f4f6 100%);
+    border-radius: 10px;
+    padding: 16px; /* 从 20px 减少到 16px */
+    display: flex;
+    align-items: center;
+    gap: 12px; /* 从 16px 减少到 12px */
+    border: 1px solid var(--border-color);
+}
+
+.stat-icon {
+    width: 48px; /* 从 56px 减少到 48px */
+    height: 48px;
+    background: var(--primary-gradient);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px; /* 从 24px 减少到 20px */
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-label {
+    color: var(--text-secondary);
+    /* ✅ 增大统计标签字体 */
+    font-size: 17px; /* 从 16px 增加到 17px */
+    margin-bottom: 4px;
+}
+
+.stat-value {
+    color: var(--text-primary);
+    /* ✅ 增大统计数值字体 */
+    font-size: 34px; /* 从 32px 增加到 34px */
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+/* ==================== 会话列表 - 扩大版 ==================== */
+
+.conversations-section {
+    background: var(--bg-card);
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: var(--shadow-sm);
+    /* ✅ 大幅增加会话区域的高度占比 */
+    flex: 6; /* 从 flex: 3 改为 flex: 6，占据更多空间 */
+    display: flex;
+    flex-direction: column;
+    min-height: 400px; /* ✅ 增加最小高度从 300px 到 400px */
+}
+
+.conversations-section .section-header-inline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.conversations-list-compact {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    /* ✅ 增加会话项之间的间距 */
+    gap: 16px; /* 从 gap: 16px 保持 */
+    min-height: 200px; /* 从 150px 增加到 200px */
+    overflow-y: auto; /* ✅ 添加滚动，确保所有会话可见 */
+}
+
+/* 自定义会话列表滚动条 */
+.conversations-list-compact::-webkit-scrollbar {
+    width: 6px;
+}
+
+.conversations-list-compact::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.conversations-list-compact::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 3px;
+}
+
+.conversations-list-compact::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+.conversation-item {
+    /* ✅ 增加会话项的内边距 */
+    padding: 18px 20px; /* 从 padding: 14px 16px 增加 */
+    border-radius: 8px;
+    background: var(--bg-primary);
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* ✅ 增加左侧和右侧的内边距 */
+    gap: 12px; /* 新增 */
+}
+
+.conversation-item:hover {
+    background: #f3f4f6;
+    transform: translateX(4px);
+}
+
+.conv-title {
+    display: flex;
+    align-items: center;
+    /* ✅ 增加图标和文字之间的间距 */
+    gap: 12px; /* 从 gap: 8px 增加到 gap: 12px */
+}
+
+.conv-title i {
+    color: var(--primary-color);
+    /* ✅ 增大图标尺寸 */
+    font-size: 18px; /* 从 font-size: 16px 增加到 font-size: 18px */
+}
+
+.conv-title-text {
+    font-weight: 600;
+    /* ✅ 增大会话标题字体 */
+    font-size: 19px; /* 从 18px 增加到 19px */
+    color: var(--text-primary);
+}
+
+.conv-time {
+    /* ✅ 增大时间字体 */
+    font-size: 17px; /* 从 16px 增加到 17px */
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 150px;
+    color: var(--text-secondary);
+}
+
+.empty-state i {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    /* ✅ 增大空状态文字字体 */
+    font-size: 18px; /* 从 17px 增加到 18px */
+}
+
+/* ==================== 按钮样式 ==================== */
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 8px;
+    border: none;
+    /* ✅ 增大按钮字体 */
+    font-size: 17px; /* 从 16px 增加到 17px */
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-primary {
+    background: var(--primary-gradient);
+    color: white;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.btn-secondary {
+    background: #f3f4f6;
+    color: var(--text-primary);
+}
+
+.btn-secondary:hover {
+    background: #e5e7eb;
+}
+
+.btn-danger {
+    background: linear-gradient(135deg, #f87171 0%, #ef4444 100%);
+    color: white;
+}
+
+.btn-danger:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+}
+
+.btn-block {
+    width: 100%;
+    justify-content: center;
+}
+
+.btn-sm {
+    padding: 6px 12px;
+    font-size: 14px;
+}
+
+/* ==================== 加载状态 ==================== */
+
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+    gap: 20px;
+}
+
+.spinner {
+    width: 56px;
+    height: 56px;
+    border: 4px solid #e5e7eb;
+    border-top-color: var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-state p {
+    color: var(--text-secondary);
+    font-size: 19px; /* 从 17px 增加到 19px */
+}
+
+/* ==================== 未登录提示 ==================== */
+
+.not-logged-in {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 60vh;
+}
+
+.prompt-card {
+    background: var(--bg-card);
+    border-radius: 16px;
+    padding: 56px;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+    max-width: 450px;
+}
+
+.prompt-icon {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 28px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 40px;
+}
+
+.prompt-card h2 {
+    font-size: 30px; /* 从 28px 增加到 30px */
+    margin-bottom: 16px;
+    color: var(--text-primary);
+}
+
+.prompt-card p {
+    color: var(--text-secondary);
+    font-size: 19px; /* 从 17px 增加到 19px */
+    margin-bottom: 28px;
+}
+
+/* ==================== 弹窗样式 ==================== */
+
+.confirm-modal,
+.edit-modal,
+.login-prompt-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+
+.confirm-modal.show,
+.edit-modal.show,
+.login-prompt-modal.show {
+    display: flex;
+}
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    width: 90%;
+    max-width: 450px;
+    animation: slideUp 0.3s ease;
+    z-index: 1001;
+}
+
+.edit-modal .modal-content {
+    max-width: 500px;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    margin: 0;
+    /* ✅ 增大模态框标题字体 */
+    font-size: 22px; /* 从 20px 增加到 22px */
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.2s;
+}
+
+.modal-close:hover {
+    color: var(--text-primary);
+}
+
+.modal-body {
+    padding: 24px;
+}
+
+.modal-body p {
+    margin: 0;
+    color: var(--text-secondary);
+    /* ✅ 增大模态框文字字体 */
+    font-size: 18px; /* 从 17px 增加到 18px */
+}
+
+.modal-footer {
+    padding: 16px 24px;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+/* ==================== 表单样式 ==================== */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: var(--text-primary);
+    /* ✅ 增大表单标签字体 */
+    font-size: 17px; /* 从 16px 增加到 17px */
+}
+
+.form-group label i {
+    margin-right: 6px;
+    color: var(--primary-color);
+}
+
+.form-control {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    /* ✅ 增大表单输入框字体 */
+    font-size: 17px; /* 从 16px 增加到 17px */
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-control::placeholder {
+    color: #9ca3af;
+}
+
+.avatar-preview {
+    margin-top: 12px;
+    text-align: center;
+}
+
+.avatar-preview img {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--primary-color);
+    box-shadow: var(--shadow-md);
+}
+
+/* ==================== 响应式设计 ==================== */
+
+@media (max-width: 1024px) {
+    .profile-content {
+        flex-direction: column;
+    }
+
+    .profile-sidebar {
+        width: 100%;
+        flex-direction: row;
+        align-items: flex-start;
+        gap: 20px;
+    }
+
+    .profile-header {
+        flex: 0 0 auto;
+    }
+
+    .info-card-inline {
+        flex: 1;
+    }
+
+    .logout-section {
+        flex: 0 0 auto;
+        align-items: flex-start;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 1rem 20px;
+    }
+
+    .page-title {
+        font-size: 1.5rem;
+    }
+
+    .back-btn {
+        padding: 0.625rem 1.25rem;
+        font-size: 0.9375rem;
+    }
+
+    .profile-container {
+        padding: 20px;
+    }
+
+    .profile-content {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .profile-sidebar {
+        width: 100%;
+        flex-direction: column;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .page-title {
+        /* ✅ 移动端页面标题字体 - 从 20px 提升到 22px */
+        font-size: 22px;
+    }
+
+    .back-btn span {
+        display: none;
+    }
+}

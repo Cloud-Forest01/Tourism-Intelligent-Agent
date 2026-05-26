@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>下一站Youth - 管理员后台</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo">
+                <i class="fas fa-route"></i>
+                <span>下一站Youth</span>
+            </div>
+            <span class="badge">管理员后台</span>
+        </div>
+        <div class="navbar-right">
+            <span class="admin-info">
+                <i class="fas fa-user-shield"></i>
+                <span id="adminUsername">管理员</span>
+            </span>
+            <button class="btn btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i>
+                退出
+            </button>
+        </div>
+    </nav>
+
+    <!-- 侧边栏和主内容区 -->
+    <div class="main-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="dashboard.html" class="menu-item active">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <span>仪表板</span>
+                </a>
+                <a href="users.html" class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>用户管理</span>
+                </a>
+                <a href="sessions.html" class="menu-item">
+                    <i class="fas fa-comments"></i>
+                    <span>会话管理</span>
+                </a>
+                <a href="configs.html" class="menu-item">
+                    <i class="fas fa-cogs"></i>
+                    <span>系统配置</span>
+                </a>
+                <a href="logs.html" class="menu-item">
+                    <i class="fas fa-file-alt"></i>
+                    <span>审计日志</span>
+                </a>
+                <div class="menu-divider"></div>
+                <a href="/" class="menu-item">
+                    <i class="fas fa-home"></i>
+                    <span>返回前台</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="content">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1>
+                    <i class="fas fa-tachometer-alt"></i>
+                    系统概览
+                </h1>
+                <p class="page-desc">实时监控系统运行状态和关键指标</p>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon users">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">总用户数</div>
+                        <div class="stat-value" id="totalUsers">0</div>
+                        <div class="stat-change" id="activeUsers24h">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>0</span>
+                            <small>24小时活跃</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon sessions">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">总会话数</div>
+                        <div class="stat-value" id="totalSessions">0</div>
+                        <div class="stat-change">
+                            <span id="activeSessions">0</span>
+                            <small>活跃会话</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon messages">
+                        <i class="fas fa-envelope"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">总消息数</div>
+                        <div class="stat-value" id="totalMessages">0</div>
+                        <div class="stat-change">
+                            <span>-</span>
+                            <small>历史消息</small>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon archived">
+                        <i class="fas fa-archive"></i>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-label">已归档</div>
+                        <div class="stat-value" id="archivedSessions">0</div>
+                        <div class="stat-change">
+                            <span>-</span>
+                            <small>会话</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 系统状态 -->
+            <div class="status-section">
+                <h2>
+                    <i class="fas fa-server"></i>
+                    系统服务状态
+                </h2>
+                <div class="status-grid">
+                    <div class="status-item success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>Agent服务</span>
+                        <span class="status-badge">运行中</span>
+                    </div>
+                    <div class="status-item success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>记忆系统</span>
+                        <span class="status-badge">运行中</span>
+                    </div>
+                    <div class="status-item success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>会话系统</span>
+                        <span class="status-badge">运行中</span>
+                    </div>
+                    <div class="status-item success">
+                        <i class="fas fa-check-circle"></i>
+                        <span>高德地图</span>
+                        <span class="status-badge">运行中</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 趋势图表 -->
+            <div class="chart-section">
+                <h2>
+                    <i class="fas fa-chart-line"></i>
+                    近7天会话趋势
+                </h2>
+                <div class="chart-container">
+                    <canvas id="trendChart"></canvas>
+                </div>
+            </div>
+
+            <!-- 快捷操作 -->
+            <div class="quick-actions">
+                <h2>
+                    <i class="fas fa-bolt"></i>
+                    快捷操作
+                </h2>
+                <div class="action-grid">
+                    <button class="action-btn" onclick="syncData()">
+                        <i class="fas fa-sync-alt"></i>
+                        <span>同步数据</span>
+                    </button>
+                    <button class="action-btn" onclick="location.href='configs.html'">
+                        <i class="fas fa-key"></i>
+                        <span>管理API密钥</span>
+                    </button>
+                    <button class="action-btn" onclick="exportData()">
+                        <i class="fas fa-download"></i>
+                        <span>导出数据</span>
+                    </button>
+                    <button class="action-btn" onclick="location.href='logs.html'">
+                        <i class="fas fa-history"></i>
+                        <span>查看日志</span>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- 加载指示器 -->
+    <div id="loadingOverlay" class="loading-overlay" style="display: none;">
+        <div class="spinner"></div>
+    </div>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/admin/js/admin.js?v=1.1"></script>
+</body>
+</html>

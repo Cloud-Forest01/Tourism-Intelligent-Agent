@@ -1,0 +1,1404 @@
+/* ==================== 继承主样式变量 ==================== */
+@import url('./main.css');
+
+/* ==================== 规划页面特定样式 ==================== */
+
+/* 导航栏调整 - 不固定，可随页面滚动 */
+/* 使用更具体的选择器提高优先级 */
+body .navbar {
+    background: white !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    position: relative !important;  /* 覆盖main.css中的fixed */
+    top: auto !important;
+    left: auto !important;
+    right: auto !important;
+    bottom: auto !important;
+    z-index: 100 !important;
+    transition: none !important;
+    padding: 0.75rem 1.5rem;
+}
+
+/* 导航栏容器 - 居中对齐 */
+body .navbar .nav-container {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;  /* 三栏等宽布局，确保中间真正居中 */
+    align-items: center;
+    max-width: 1600px;
+    margin: 0 auto;
+    gap: 2rem;
+    height: 100%;
+}
+
+body .navbar .nav-brand {
+    grid-column: 1;  /* 左侧栏 */
+    justify-self: start;
+}
+
+body .navbar .nav-title {
+    grid-column: 2;  /* 中间栏 */
+    grid-row: 1;
+    justify-self: center;  /* 在中间栏内居中 */
+    text-align: center;
+    font-size: 1.5rem;  /* 增大字体 */
+    font-weight: 700;  /* 更粗 */
+    color: var(--text-primary);
+    letter-spacing: 0.5px;  /* 增加字间距 */
+    white-space: nowrap;  /* 防止换行 */
+}
+
+body .navbar .nav-actions {
+    grid-column: 3;  /* 右侧栏 */
+    display: flex;
+    gap: 0.75rem;
+    justify-self: end;  /* 右对齐 */
+}
+
+.nav-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+/* ==================== 主容器布局 ==================== */
+.planner-container {
+    display: grid;
+    grid-template-columns: 380px 1fr 400px;  /* 增加左侧栏宽度 */
+    gap: 1.5rem;
+    height: calc(100vh - 70px);
+    padding: 1.5rem;
+    background: var(--bg-secondary);
+    overflow: hidden;
+    max-width: 1920px;
+    margin: 0 auto;
+}
+
+/* ==================== 侧边栏 ==================== */
+.sidebar-left,
+.sidebar-right {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+.sidebar-left::-webkit-scrollbar,
+.sidebar-right::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar-left::-webkit-scrollbar-thumb,
+.sidebar-right::-webkit-scrollbar-thumb {
+    background: var(--text-tertiary);
+    border-radius: 3px;
+}
+
+/* ==================== 面板样式 ==================== */
+.panel {
+    background: white;
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+}
+
+.panel h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.panel h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ==================== 表单样式 ==================== */
+.info-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    width: 100%;  /* 确保占满容器宽度 */
+    box-sizing: border-box;
+}
+
+.form-group label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;  /* 确保输入框占满容器 */
+    max-width: 100%;  /* 防止溢出 */
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+    box-sizing: border-box;  /* 包含padding在宽度计算内 */
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    width: 100%;  /* 确保行占满宽度 */
+}
+
+/* 标签选择器 */
+.tags-input {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.tag-item {
+    padding: 0.5rem 0.75rem;
+    background: var(--bg-tertiary);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.375rem;
+    color: var(--text-secondary);
+}
+
+.tag-item:hover {
+    background: var(--primary-light);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.tag-item.selected {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-dark);
+}
+
+/* ==================== 按钮 ==================== */
+.btn-generate {
+    padding: 0.875rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-md);
+}
+
+.btn-generate:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+}
+
+.btn-secondary {
+    padding: 0.625rem 1rem;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-secondary:hover {
+    background: var(--border-color);
+}
+
+.btn-primary {
+    padding: 0.625rem 1rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+    color: white;
+    font-weight: 500;
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    box-shadow: var(--shadow-md);
+}
+
+/* ==================== 预算概览 ==================== */
+.budget-stats {
+    display: grid;
+    gap: 0.75rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.stat-item .label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+}
+
+.stat-item .value {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+#allocated-budget {
+    color: var(--primary-color);
+}
+
+#remaining-budget {
+    color: var(--success-color);
+}
+
+/* ==================== 地图区域 ==================== */
+.map-area {
+    position: relative;
+    background: white;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+}
+
+.map-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    background: white;
+    border-bottom: 1px solid var(--border-color);
+    gap: 1rem;
+}
+
+.toolbar-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.tool-btn {
+    width: 40px;
+    height: 40px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.tool-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.tool-btn.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-dark);
+}
+
+.search-box {
+    flex: 1;
+    max-width: 400px;
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.search-box i {
+    position: absolute;
+    left: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.search-box input {
+    width: 100%;
+    padding: 0.625rem 1rem 0.625rem 2.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+.map-container {
+    flex: 1;
+    position: relative;
+    min-height: 400px; /* 确保地图容器有最小高度 */
+    width: 100%;
+}
+
+/* 天数标签样式 */
+.day-tabs {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.day-tab {
+    padding: 0.5rem 1rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.day-tab:hover {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.day-tab.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-dark);
+}
+
+/* AI时间轴样式 */
+.ai-timeline {
+    overflow-y: auto;
+    max-height: calc(100vh - 250px); /* 限制最大高度，确保可以滚动 */
+    padding-right: 0.5rem;
+}
+
+.ai-timeline::-webkit-scrollbar {
+    width: 6px;
+}
+
+.ai-timeline::-webkit-scrollbar-thumb {
+    background: var(--text-tertiary);
+    border-radius: 3px;
+}
+
+.ai-timeline::-webkit-scrollbar-thumb:hover {
+    background: var(--text-secondary);
+}
+
+/* 搜索结果下拉 */
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 1rem;
+    right: 1rem;
+    background: white;
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-lg);
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 100;
+    margin-top: 0.5rem;
+}
+
+.search-result-item {
+    padding: 0.875rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid var(--bg-tertiary);
+    transition: background 0.2s ease;
+}
+
+.search-result-item:hover {
+    background: var(--bg-secondary);
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.result-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.result-address {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+/* ==================== 行程面板 ==================== */
+.itinerary-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.day-selector {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: var(--bg-secondary);
+    padding: 0.375rem;
+    border-radius: var(--radius-md);
+}
+
+.day-nav {
+    width: 32px;
+    height: 32px;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.day-nav:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+#current-day-label {
+    font-weight: 600;
+    color: var(--text-primary);
+    min-width: 60px;
+    text-align: center;
+}
+
+/* 时间轴 */
+.timeline {
+    flex: 1;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.timeline::-webkit-scrollbar {
+    width: 4px;
+}
+
+.timeline::-webkit-scrollbar-thumb {
+    background: var(--text-tertiary);
+    border-radius: 2px;
+}
+
+.timeline-item {
+    position: relative;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    margin-bottom: 0.75rem;
+    border-left: 3px solid var(--primary-color);
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.timeline-item:hover {
+    background: var(--bg-tertiary);
+    transform: translateX(4px);
+}
+
+.timeline-item-time {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.timeline-item-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    gap: 0.5rem;
+}
+
+.timeline-item-title {
+    font-weight: 500;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+}
+
+.timeline-item-info {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+.timeline-item-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.icon-btn {
+    width: 28px;
+    height: 28px;
+    background: white;
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.icon-btn:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.icon-btn.delete:hover {
+    background: var(--error-color);
+    border-color: var(--error-color);
+}
+
+/* 空状态 */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-tertiary);
+}
+
+.empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin-bottom: 0.5rem;
+}
+
+/* ==================== 地点列表 ==================== */
+.places-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.place-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.place-item:hover {
+    background: var(--bg-tertiary);
+}
+
+.place-item-marker {
+    width: 32px;
+    height: 32px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    font-size: 0.75rem;
+}
+
+.place-item-info {
+    flex: 1;
+}
+
+.place-item-name {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+}
+
+.place-item-address {
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+
+/* ==================== 面板操作 ==================== */
+.panel-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-add-item {
+    flex: 1;
+    padding: 0.75rem;
+    background: var(--bg-tertiary);
+    border: 2px dashed var(--border-color);
+    border-radius: var(--radius-md);
+    color: var(--text-secondary);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+}
+
+.btn-add-item:hover {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+    border-style: solid;
+}
+
+/* ==================== 模态框 ==================== */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: var(--radius-lg);
+    width: 90%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: var(--shadow-xl);
+    animation: slideUp 0.3s ease;
+    position: relative;
+    z-index: 10000;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.modal-header h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.close-btn {
+    width: 32px;
+    height: 32px;
+    background: var(--bg-tertiary);
+    border: none;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+    background: var(--error-color);
+    color: white;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* AI进度模态框 */
+.progress-modal {
+    text-align: center;
+    max-width: 500px;
+}
+
+/* 机器人跳跃动画 */
+.robot-animation {
+    margin-bottom: 1.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.robot-bounce {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: white;
+    box-shadow: 0 8px 24px rgba(102, 126, 234, 0.4);
+    animation: bounce 0.6s ease-in-out infinite;
+}
+
+.robot-bounce i {
+    animation: wave 1s ease-in-out infinite;
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+    }
+    50% {
+        transform: translateY(-15px) scale(1.05);
+    }
+}
+
+@keyframes wave {
+    0%, 100% {
+        transform: rotate(0deg);
+    }
+    25% {
+        transform: rotate(10deg);
+    }
+    75% {
+        transform: rotate(-10deg);
+    }
+}
+
+.progress-modal h3 {
+    font-size: 1.375rem;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.progress-modal p {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    font-size: 0.9375rem;
+}
+
+/* 进度百分比显示 */
+.progress-percentage {
+    font-size: 2.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 1rem 0 0.5rem 0;
+    transition: all 0.3s ease;
+}
+
+.progress-bar {
+    height: 12px;
+    background: var(--bg-tertiary);
+    border-radius: 6px;
+    overflow: hidden;
+    margin: 1rem 0;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-color), var(--primary-light));
+    border-radius: 6px;
+    transition: width 0.5s ease;
+    position: relative;
+}
+
+.progress-fill::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+    0% {
+        transform: translateX(-100%);
+    }
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* 进度步骤 */
+.progress-steps {
+    margin-top: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+}
+
+.progress-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    transition: all 0.3s ease;
+}
+
+.progress-step.pending {
+    opacity: 0.4;
+}
+
+.progress-step.active {
+    background: var(--primary-light);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.progress-step.completed {
+    color: var(--success-color);
+    font-weight: 600;
+}
+
+.progress-step i {
+    width: 16px;
+    text-align: center;
+    font-size: 0.875rem;
+}
+
+/* ==================== 动画 ==================== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* 99%等待状态的脉冲效果 */
+.progress-fill.waiting {
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+/* ==================== 响应式设计 ==================== */
+@media (max-width: 1400px) {
+    .planner-container {
+        grid-template-columns: 300px 1fr 350px;
+    }
+}
+
+@media (max-width: 1024px) {
+    .planner-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr auto;
+        height: auto;
+        overflow-y: auto;
+    }
+
+    .sidebar-left,
+    .sidebar-right {
+        overflow-y: visible;
+    }
+
+    .map-area {
+        height: 500px;
+    }
+}
+
+@media (max-width: 768px) {
+    .nav-actions {
+        display: none;
+    }
+
+    .map-toolbar {
+        flex-wrap: wrap;
+    }
+
+    .search-box {
+        max-width: 100%;
+        order: 3;
+        flex-basis: 100%;
+    }
+}
+
+/* ==================== 兴趣偏好网格样式 ==================== */
+.preferences-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);  /* 改为2列，确保10个选项都能显示 */
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.preference-item {
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 0.5rem;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.8rem;  /* 稍微减小字体 */
+}
+
+.preference-item:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-color-light);
+}
+
+.preference-item input[type="checkbox"] {
+    margin-right: 0.4rem;
+    cursor: pointer;
+    width: 14px;
+    height: 14px;
+}
+
+.preference-item label {
+    cursor: pointer;
+    font-size: 0.8rem;
+    color: var(--text-primary);
+    user-select: none;
+    white-space: nowrap;
+}
+
+.preference-item input[type="checkbox"]:checked + label {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* ==================== AI规划面板样式 ==================== */
+.ai-plan-panel {
+    max-height: 500px;
+    display: flex;
+    flex-direction: column;
+}
+
+.ai-plan-content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    font-size: 0.875rem;
+    line-height: 1.6;
+}
+
+/* AI规划内容中的Markdown样式 */
+.ai-plan-content h1,
+.ai-plan-content h2,
+.ai-plan-content h3,
+.ai-plan-content h4,
+.ai-plan-content h5,
+.ai-plan-content h6 {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.ai-plan-content h1 {
+    font-size: 1.5em;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.3em;
+}
+
+.ai-plan-content h2 {
+    font-size: 1.3em;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 0.3em;
+}
+
+.ai-plan-content p {
+    margin-bottom: 0.75rem;
+}
+
+.ai-plan-content ul,
+.ai-plan-content ol {
+    margin-bottom: 0.75rem;
+    padding-left: 1.5em;
+}
+
+.ai-plan-content li {
+    margin-bottom: 0.25rem;
+}
+
+.ai-plan-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+}
+
+.ai-plan-content table th,
+.ai-plan-content table td {
+    padding: 0.5rem;
+    border: 1px solid #d0d7de;
+    text-align: left;
+}
+
+.ai-plan-content table th {
+    background: #f6f8fa;
+    font-weight: 600;
+}
+
+.ai-plan-content img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 6px;
+    margin: 0.5rem 0;
+}
+
+.ai-plan-content code {
+    padding: 0.2rem 0.4rem;
+    background: #f6f8fa;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.85em;
+}
+
+.ai-plan-content pre {
+    padding: 1rem;
+    background: #f6f8fa;
+    border-radius: 6px;
+    overflow-x: auto;
+    margin-bottom: 1rem;
+}
+
+.ai-plan-content blockquote {
+    padding: 0.5rem 1rem;
+    margin: 0.5rem 0;
+    border-left: 4px solid #d0d7de;
+    background: #f6f8fa;
+    color: #6a737d;
+}
+
+/* ==================== AI对话显示区域 ==================== */
+.trip-title {
+    flex: 1;
+    text-align: center;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    padding: 0 1rem;
+}
+
+.ai-conversation {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.ai-conversation .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--text-secondary);
+    text-align: center;
+    padding: 2rem;
+}
+
+.ai-conversation .empty-state i {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    color: var(--primary-color);
+    opacity: 0.5;
+}
+
+.ai-conversation .empty-state .hint {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-top: 0.5rem;
+}
+
+/* AI消息样式 */
+.ai-message {
+    background: white;
+    border-radius: 12px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.ai-message-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.ai-message-header .ai-avatar {
+    width: 32px;
+    height: 32px;
+    background: linear-gradient(135deg, #10B981, #059669);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 0.9rem;
+}
+
+.ai-message-header .ai-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    flex: 1;
+}
+
+.ai-message-header .ai-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.ai-message-content {
+    color: var(--text-primary);
+    line-height: 1.6;
+    font-size: 0.95rem;
+}
+
+.ai-message-content .day-section {
+    margin-bottom: 1.5rem;
+}
+
+.ai-message-content .day-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ai-message-content .day-title i {
+    color: var(--primary-color);
+}
+
+.ai-message-content .poi-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ai-message-content .poi-item {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    border-left: 3px solid var(--primary-color);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.ai-message-content .poi-item:hover {
+    background: #f0fdf4;
+    transform: translateX(4px);
+}
+
+.ai-message-content .poi-item-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ai-message-content .poi-item-name .poi-number {
+    width: 24px;
+    height: 24px;
+    background: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.ai-message-content .poi-item-time {
+    font-size: 0.85rem;
+    color: var(--primary-color);
+    margin-bottom: 0.25rem;
+}
+
+.ai-message-content .poi-item-time i {
+    margin-right: 0.25rem;
+}
+
+.ai-message-content .poi-item-desc {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.ai-message-content .day-summary {
+    background: #f0fdf4;
+    border-left: 4px solid var(--primary-color);
+    padding: 0.75rem;
+    border-radius: 6px;
+    margin-top: 0.75rem;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+}
+
+.ai-message-content .tips-section {
+    margin-top: 0.75rem;
+}
+
+.ai-message-content .tips-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.ai-message-content .tips-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ai-message-content .tips-list li {
+    padding: 0.5rem 0.75rem;
+    background: #fffbeb;
+    border-radius: 6px;
+    margin-bottom: 0.25rem;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.ai-message-content .tips-list li::before {
+    content: '💡';
+    font-size: 0.9rem;
+}
+
+/* ==================== 旅行语录样式 ==================== */
+.travel-quote {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 1.25rem;
+    border-radius: var(--radius-lg);
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    text-align: center;
+    position: relative;
+    line-height: 1.6;
+    font-size: 0.95rem;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.travel-quote i {
+    font-size: 0.875rem;
+    opacity: 0.6;
+}
+
+.travel-quote i:first-child {
+    margin-right: 0.5rem;
+}
+
+.travel-quote i:last-child {
+    margin-left: 0.5rem;
+}
+
+.travel-quote span {
+    position: relative;
+    z-index: 1;
+}
+

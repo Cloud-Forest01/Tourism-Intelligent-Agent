@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户管理 - 下一站Youth管理员后台</title>
+    <link rel="stylesheet" href="/admin/css/admin.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+        }
+        .search-box input {
+            border: none;
+            outline: none;
+            margin-left: 0.5rem;
+        }
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th {
+            background: #f9fafb;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #6b7280;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f3f4f6;
+        }
+        tr:hover {
+            background: #f9fafb;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .badge-success { background: #d1fae5; color: #065f46; }
+        .badge-danger { background: #fee2e2; color: #991b1b; }
+        .btn-sm {
+            padding: 4px 8px;
+            font-size: 12px;
+            margin-right: 4px;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 1rem;
+        }
+        .text-center { text-align: center; }
+        code { color: #6b7280; }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-left">
+            <div class="logo">
+                <i class="fas fa-route"></i>
+                <span>下一站Youth</span>
+            </div>
+            <span class="badge">管理员后台</span>
+        </div>
+        <div class="navbar-right">
+            <span class="admin-info">
+                <i class="fas fa-user-shield"></i>
+                <span id="adminUsername">管理员</span>
+            </span>
+            <button class="btn btn-logout" onclick="logout()">
+                <i class="fas fa-sign-out-alt"></i> 退出
+            </button>
+        </div>
+    </nav>
+
+    <div class="main-container">
+        <aside class="sidebar">
+            <div class="sidebar-menu">
+                <a href="/admin/dashboard.html" class="menu-item">
+                    <i class="fas fa-tachometer-alt"></i> 仪表板
+                </a>
+                <a href="/admin/users.html" class="menu-item active">
+                    <i class="fas fa-users"></i> 用户管理
+                </a>
+                <a href="/admin/sessions.html" class="menu-item">
+                    <i class="fas fa-comments"></i> 会话管理
+                </a>
+                <a href="/admin/configs.html" class="menu-item">
+                    <i class="fas fa-cogs"></i> 系统配置
+                </a>
+                <a href="/admin/logs.html" class="menu-item">
+                    <i class="fas fa-file-alt"></i> 审计日志
+                </a>
+                <a href="/" class="menu-item">
+                    <i class="fas fa-home"></i> 返回前台
+                </a>
+            </div>
+        </aside>
+
+        <main class="content">
+            <div class="page-header">
+                <h1><i class="fas fa-users"></i> 用户管理</h1>
+                <p class="page-desc">管理系统中的所有用户</p>
+            </div>
+
+            <div class="toolbar">
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="搜索用户名、邮箱或昵称..." onkeypress="handleSearchKeypress(event)">
+                    <button class="btn btn-sm" onclick="performSearch()" style="margin-left: 8px;">
+                        <i class="fas fa-search"></i> 搜索
+                    </button>
+                    <button class="btn btn-sm" onclick="clearSearch()" style="margin-left: 4px;">
+                        <i class="fas fa-times"></i> 清空
+                    </button>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>用户名</th>
+                            <th>邮箱</th>
+                            <th>昵称</th>
+                            <th>注册时间</th>
+                            <th>会话数</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="usersTableBody">
+                        <tr>
+                            <td colspan="7" class="text-center">
+                                <i class="fas fa-spinner fa-spin"></i> 加载中...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="pagination">
+                <button class="btn" id="prevBtn" onclick="loadPrevious()">
+                    <i class="fas fa-chevron-left"></i> 上一页
+                </button>
+                <span id="pageInfo">第 1 页</span>
+                <button class="btn" id="nextBtn" onclick="loadNext()">
+                    下一页 <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <script src="/admin/js/admin.js?v=1.2"></script>
+    <script>
+        let currentPage = 0;
+        const pageSize = 20;
+        let totalPages = 1;
+        let currentSearch = '';
+
+        async function loadUsers(page = 0) {
+            const tbody = document.getElementById('usersTableBody');
+            tbody.innerHTML = '<tr><td colspan="7" class="text-center"><i class="fas fa-spinner fa-spin"></i> 加载中...</td></tr>';
+
+            try {
+                let url = `/users?skip=${page * pageSize}&limit=${pageSize}`;
+                if (currentSearch) {
+                    url += `&search=${encodeURIComponent(currentSearch)}`;
+                    console.log('🔍 搜索用户:', currentSearch);
+                }
+
+                console.log('📡 API请求:', url);
+                const response = await apiRequest(url);
+                if (response.success) {
+                    const data = response.data;
+                    console.log('📊 搜索结果:', data.total, '个用户');
+                    totalPages = Math.ceil(data.total / pageSize);
+                    currentPage = page;
+                    displayUsers(data.users);
+                    updatePagination();
+                    updateSearchInfo(data.total);
+                }
+            } catch (error) {
+                console.error('❌ 加载用户失败:', error);
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center" style="color:red;">加载失败</td></tr>';
+            }
+        }
+
+        function handleSearchKeypress(event) {
+            if (event.key === 'Enter') {
+                performSearch();
+            }
+        }
+
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            currentSearch = searchInput.value.trim();
+            console.log('🔎 执行搜索:', currentSearch || '(空搜索)');
+            currentPage = 0;
+            loadUsers(0);
+        }
+
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
+            currentSearch = '';
+            console.log('🗑️ 清空搜索');
+            currentPage = 0;
+            loadUsers(0);
+        }
+
+        function updateSearchInfo(total) {
+            // 可以在页面上显示搜索结果数量
+            if (currentSearch) {
+                console.log(`✅ 搜索 "${currentSearch}": 找到 ${total} 个结果`);
+            }
+        }
+
+        function displayUsers(users) {
+            const tbody = document.getElementById('usersTableBody');
+            if (users.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" class="text-center">暂无用户数据</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = users.map(user => `
+                <tr>
+                    <td>${escapeHtml(user.username)}</td>
+                    <td>${escapeHtml(user.email || '-')}</td>
+                    <td>${escapeHtml(user.nickname || '-')}</td>
+                    <td>${formatDate(user.created_at)}</td>
+                    <td>${user.session_count}</td>
+                    <td>
+                        <span class="badge ${user.is_active ? 'badge-success' : 'badge-danger'}">
+                            ${user.is_active ? '正常' : '禁用'}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-info" onclick="viewUser('${user.user_id}')" title="查看">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-danger" onclick="deleteUser('${user.user_id}', '${escapeHtml(user.username)}')" title="删除">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function updatePagination() {
+            document.getElementById('pageInfo').textContent = `第 ${currentPage + 1} / ${totalPages || 1} 页`;
+            document.getElementById('prevBtn').disabled = currentPage === 0;
+            document.getElementById('nextBtn').disabled = currentPage >= totalPages - 1;
+        }
+
+        function loadPrevious() {
+            if (currentPage > 0) loadUsers(currentPage - 1);
+        }
+
+        function loadNext() {
+            if (currentPage < totalPages - 1) loadUsers(currentPage + 1);
+        }
+
+        async function viewUser(userId) {
+            try {
+                const response = await apiRequest(`/users/${userId}`);
+                if (response.success) {
+                    const user = response.data;
+                    const message = `
+用户详情：
+━━━━━━━━━━━━━━━━
+用户名：${user.username}
+邮箱：${user.email || '未设置'}
+昵称：${user.nickname || '未设置'}
+注册时间：${formatDate(user.created_at)}
+最后登录：${formatDate(user.last_login)}
+会话数：${user.session_count}
+消息数：${user.message_count}
+状态：${user.is_active ? '正常' : '禁用'}
+订阅类型：${user.subscription_tier}
+                    `.trim();
+                    alert(message);
+                } else {
+                    alert('获取用户详情失败');
+                }
+            } catch (error) {
+                alert('获取用户详情失败');
+            }
+        }
+
+        async function deleteUser(userId, username) {
+            if (!confirm(`确定要删除用户 "${username}" 吗？此操作不可恢复！`)) return;
+
+            try {
+                const response = await apiRequest(`/users/${userId}`, { method: 'DELETE' });
+                if (response.success) {
+                    alert('用户删除成功');
+                    loadUsers(currentPage);
+                } else {
+                    alert('删除失败: ' + (response.message || '未知错误'));
+                }
+            } catch (error) {
+                alert('删除失败');
+            }
+        }
+
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // 初始化
+        loadUsers();
+    </script>
+</body>
+</html>

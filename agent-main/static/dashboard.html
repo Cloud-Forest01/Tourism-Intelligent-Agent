@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的会话 - 下一站Youth</title>
+    <link rel="stylesheet" href="/static/css/dashboard.css">
+    <link rel="stylesheet" href="/static/css/user-menu.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- 导航栏 -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i class="fas fa-route"></i>
+                <span>下一站Youth</span>
+            </div>
+            <div class="nav-menu">
+                <a href="/" class="nav-item">
+                    <span>首页</span>
+                </a>
+                <a href="/dashboard.html" class="nav-item active">
+                    <span>我的会话</span>
+                </a>
+            </div>
+            <div class="nav-actions">
+                <!-- 用户菜单 -->
+                <div class="user-menu" id="userMenu">
+                    <button class="avatar-btn" id="avatarBtn" onclick="handleAvatarClick()">
+                        <i class="fas fa-user-circle"></i>
+                    </button>
+                    <div class="dropdown-menu" id="dropdownMenu">
+                        <a href="/profile.html">
+                            <i class="fas fa-user"></i> 个人资料
+                        </a>
+                        <a href="/dashboard.html">
+                            <i class="fas fa-comments"></i> 我的会话
+                        </a>
+                        <div class="dropdown-divider"></div>
+                        <a href="#" onclick="event.preventDefault(); showConfirmModal()">
+                            <i class="fas fa-sign-out-alt"></i> 退出登录
+                        </a>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容 -->
+    <div class="dashboard-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-chart-pie"></i> 统计概览</h3>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon primary">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">活跃会话</p>
+                            <p class="stat-value" id="activeConversations">0/10</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon success">
+                            <i class="fas fa-map"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">创建计划</p>
+                            <p class="stat-value" id="totalPlans">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon info">
+                            <i class="fas fa-archive"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">归档会话</p>
+                            <p class="stat-value" id="archivedConversations">0</p>
+                        </div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-icon danger">
+                            <i class="fas fa-trash"></i>
+                        </div>
+                        <div class="stat-content">
+                            <p class="stat-label">已删除</p>
+                            <p class="stat-value" id="deletedConversations">0</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="sidebar-section">
+                <h3><i class="fas fa-tags"></i> 热门目的地</h3>
+                <div class="tags-list" id="favoriteDestinations">
+                    <span class="tag">北京</span>
+                    <span class="tag">上海</span>
+                    <span class="tag">西安</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- 顶部操作栏 -->
+            <div class="content-header">
+                <div class="header-left">
+                    <h1>我的会话</h1>
+                    <p class="text-muted">管理您的旅行规划会话</p>
+                </div>
+                <div class="header-actions">
+                    <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="搜索会话..." autocomplete="off">
+                        <i class="fas fa-search search-icon"></i>
+                        <button class="search-clear" id="searchClear" style="display: none;" title="清除搜索">
+                            <i class="fas fa-times"></i>
+                        </button>
+                        <button class="search-btn" id="searchBtn" title="搜索">
+                            <i class="fas fa-search"></i>
+                            <span>搜索</span>
+                        </button>
+                    </div>
+                    <button class="btn btn-primary" onclick="createNewConversation()">
+                        <i class="fas fa-plus"></i> 新建会话
+                    </button>
+                </div>
+            </div>
+
+            <!-- 过滤器 -->
+            <div class="filters">
+                <button class="filter-btn active" data-filter="active">
+                    <i class="fas fa-circle"></i> 活跃
+                </button>
+                <button class="filter-btn" data-filter="archived">
+                    <i class="fas fa-archive"></i> 归档
+                </button>
+                <button class="filter-btn" data-filter="deleted">
+                    <i class="fas fa-trash"></i> 回收站
+                    <span style="font-size: 11px; opacity: 0.7; margin-left: 4px;">(保留7天)</span>
+                </button>
+            </div>
+
+            <!-- 搜索结果计数 -->
+            <div class="search-results-count" id="searchResultsCount" style="display: none;">
+                <i class="fas fa-search"></i>
+                找到 <strong id="resultsCount">0</strong> 个结果
+                <button class="clear-search-link" id="clearSearchBtn">清除搜索</button>
+            </div>
+
+            <!-- 会话列表 -->
+            <div class="conversations-list" id="conversationsList">
+                <!-- 会话卡片将通过 JavaScript 动态加载 -->
+            </div>
+
+            <!-- 空状态 -->
+            <div class="empty-state" id="emptyState" style="display: none;">
+                <div class="empty-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h3 id="emptyStateTitle">暂无会话</h3>
+                <p id="emptyStateMessage">点击"新建会话"开始规划您的旅行</p>
+                <button class="btn btn-primary" id="emptyStateBtn" onclick="createNewConversation()" style="display: none;">
+                    <i class="fas fa-plus"></i> 新建会话
+                </button>
+            </div>
+        </main>
+    </div>
+
+    <!-- 退出确认对话框 -->
+    <div class="confirm-modal" id="confirmModal">
+        <div class="modal-overlay" onclick="closeConfirmModal()"></div>
+        <div class="modal-content small">
+            <div class="modal-header">
+                <h3><i class="fas fa-sign-out-alt"></i> 退出登录</h3>
+                <button class="modal-close" onclick="closeConfirmModal()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>确定要退出吗？</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeConfirmModal()">取消</button>
+                <button class="btn btn-danger" onclick="confirmLogout()">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 登录提示弹窗 -->
+    <div class="login-prompt-modal" id="loginPromptModal">
+        <div class="modal-overlay" onclick="closeLoginPrompt()"></div>
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-info-circle"></i> 提示</h3>
+                <button class="modal-close" onclick="closeLoginPrompt()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>访问此功能需要先登录</p>
+                <p style="color: #666; font-size: 14px; margin-top: 10px;">登录后可以保存历史对话和管理会话</p>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" onclick="closeLoginPrompt()">取消</button>
+                <button class="btn btn-primary" onclick="goToLogin()">去登录</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 通知 -->
+    <div id="toast" class="toast">
+        <div class="toast-icon">
+            <i class="fas fa-check-circle" id="toastIcon"></i>
+        </div>
+        <div class="toast-content">
+            <p class="toast-title" id="toastTitle">成功</p>
+            <p class="toast-message" id="toastMessage">操作成功</p>
+        </div>
+        <button class="toast-close" onclick="hideToast()">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+
+    <script src="/static/js/dashboard.js"></script>
+    <script src="/static/js/user-auth.js"></script>
+
+    <!-- 登录检查：仪表板页面需要登录 -->
+    <script>
+        // 页面加载完成后，检查登录状态
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('[dashboard.html] DOM已加载，检查登录状态');
+            if (typeof window.initializeUserAuth === 'function') {
+                // 仪表板页面要求登录
+                window.initializeUserAuth(true);
+            } else {
+                console.error('[dashboard.html] user-auth.js 未加载，无法进行登录检查');
+            }
+        });
+    </script>
+</body>
+</html>
