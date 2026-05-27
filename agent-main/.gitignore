@@ -46,10 +46,24 @@ user_data/
 memory/
 temp_files/
 
+# 数据库文件（包含用户账户和会话记录）
+data/*.db
+data/*.sqlite
+data/*.sqlite3
+
+# JWT密钥（自动生成，不应提交）
+core/.jwt_secret_key
+
+# 用户上传文件
+static/uploads/
+
 # 临时文件
 temp_visualizations/
 *.tmp
 *.log
+
+# RAG向量索引（二进制文件，可通过 rag_engine.py 重新生成）
+core/RAG_agent/faiss_index/
 
 # 操作系统
 .DS_Store
