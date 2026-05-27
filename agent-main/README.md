@@ -14,7 +14,6 @@
 - [项目结构](#项目结构)
 - [快速开始](#快速开始)
 - [API 文档](#api-文档)
-- [面试要点总结](#面试要点总结)
 
 ---
 
@@ -306,66 +305,6 @@ JWT_SECRET_KEY=你的JWT密钥
 | `/api/auth/login` | POST | 用户登录 |
 | `/api/auth/me` | GET | 获取当前用户信息 |
 | `/api/admin/dashboard` | GET | 管理后台概览 |
-
----
-
-## 面试要点总结
-
-### 如果你在面试中介绍这个项目，以下是可以重点展开的方向：
-
-#### 1. Agent 架构设计（高频考点）
-
-> **为什么不用 LangChain 而自己实现 Agent？**
-
-- 更轻量：避免 LangChain 框架的过度抽象和依赖膨胀
-- 更可控：完全掌控任务规划、工具调用的执行流程
-- 学习价值：深入理解 Agent 底层原理（任务分解、工具编排、结果整合）
-- 实现的关键模块：意图识别（Intent 枚举）、任务规划器（TaskStep/StepContext）、工具注册与调用、多步骤执行策略
-
-#### 2. 高德地图 MCP 集成（技术亮点）
-
-> **MCP 协议的理解与实践**
-
-- MCP (Model Context Protocol) 是 LLM 与外部工具交互的标准化协议
-- 将高德地图 REST API 封装为 MCP Server，暴露为 Agent 可调用的工具集合
-- 实现了工具元数据自动注册、参数 Schema 生成、结果格式化
-
-#### 3. RAG 检索增强（高频考点）
-
-> **如何解决 LLM 知识不足和幻觉问题？**
-
-- 使用 Sentence-Transformers 将旅行知识库向量化
-- 通过 FAISS 构建高效向量索引
-- 用户提问时检索 Top-K 相关文档，拼接后注入 LLM Prompt
-- 结合 ICL (In-Context Learning) 提供 Few-shot 示例提升回答准确性
-
-#### 4. 流式响应实现
-
-> **SSE vs WebSocket 的选择**
-
-- 选用 SSE (Server-Sent Events) 实现流式输出
-- 单向推送场景（服务端→客户端）SSE 比 WebSocket 更轻量
-- FastAPI 的 StreamingResponse 配合 `async generator` 实现
-
-#### 5. 安全设计
-
-- JWT 认证流程、Token 过期与刷新策略
-- bcrypt 密码哈希（为什么不用 MD5/SHA256）
-- 代码执行沙箱的必要性（LLM 可能生成危险代码）
-- 输入校验与 XSS 防护
-
-#### 6. 数据库设计
-
-- SQLAlchemy ORM 的模型设计（User/Conversation/Message/Resource 关系）
-- 为什么选择 SQLite（轻量、零配置、适合单体应用）
-- Alembic 数据库迁移管理
-
-#### 7. 项目工程化
-
-- 清晰的模块划分（前后端分离、核心逻辑解耦）
-- 统一的配置管理（环境变量 + Config 单例）
-- 完整的错误处理与日志记录
-- Git 版本管理与 `.gitignore` 最佳实践
 
 ---
 
